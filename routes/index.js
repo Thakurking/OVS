@@ -15,7 +15,7 @@ const nodemailer = require("nodemailer");
 router.get("/", function(req, res) {
   // ADMIN ID : ritesh@gmail.com
   // PASS : 12345
-  // important ----- uncomment the below code and reload the index page once for setting up database
+  // important ----- uncomment and reload the index page once for setting up database
 
   // Admin.create({ Email: "ritesh@gmail.com", Password: "$2b$08$ZDYPv1F6hssSf6QaNhQPb./6PFuv4FyHuEj4fBYipSAixfcNOPFwi" }, function(
   //   err,
