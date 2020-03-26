@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVS</title>
+
+    <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="chartjs/Chart.min.css">
+    <style>
+        ::-webkit-scrollbar {
+            width: 0;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
+
+        .vote {
+            height: 100px;
+            width: 100px;
+            overflow: hidden;
+            border-radius: 50%;
+            color: white;
+        }
+
+        .banner {
+            min-height: 400px;
+            background: url("img/1.jpg");
+            background-size: cover;
+            background-position: top;
+            width: 100%;
+        }
+
+        #time {
+            color: white;
+            text-shadow: 1px 1px 10px #333;
+        }
+
+        #time .h3 {
+            color: white;
+            font-size: 40px;
+            font-weight: 700;
+        }
+
+        .navbar-dark {
+            background: none;
+        }
+
+        .move-cont {
+            position: relative;
+            bottom: 0;
+            margin: 0 auto;
+        }
+
+        .move {
+            position: relative;
+            transition: 3s;
+            animation: updown 2s infinite;
+        }
+
+        @keyframes updown {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-30px);
+            }
+
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .symbolWrapper {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            /* border: .1rem solid #333; */
+            display: inline-block;
+        }
+    </style>
+</head>
+
+
+<body>
+    <section class="banner">
+        <nav class="navbar navbar-sticky navbar-expand-sm navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#"><strong>OVS</strong></a>
+                <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse"
+                    data-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="collapsibleNavId">
+                    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About us</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- countdown-timer -->
+        <div class="container" id="time">
+            <div class="row">
+                <div class="col-12 text-center pb-3">
+                    <!-- election header -->
+                    <h1 class="display-3">Student Union Representative Election</h1>
+                    <h2 class="display-5"> Asansol Enegneering College</h2>
+                    <h2>begins in..</h2>
+                </div>
+                <div class=" col-6 col-md-3 text-center p-4"><span class="h3 days"></span><br><span>Days</span>
+                </div>
+                <div class="col-6 col-md-3 text-center p-4"><span class="h3 hours"></span><br><span>Hours</span></div>
+                <div class="col-6 col-md-3 text-center p-4"><span class="h3 minutes"></span><br><span>minutes</span>
+                </div>
+                <div class="col-6 col-md-3 text-center p-4"><span class="h3 seconds"></span><br><span>seconds</span>
+                </div>
+                <div class="text-center move-cont">
+                    <a href="#candidate" class="text-white"><i class="fa fa-angle-down fa-2x move"
+                            aria-hidden="true"></i><br>swipe
+                        down</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- candidates -->
+    <div class="container">
+        <div class="row" id="candidate">
+            <div class="col-12 text-center display-4 p-3">
+                Candidates
+            </div>
+
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
+                <!-- candidate profile image -->
+                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                    style="height: 120px;">
+                <!-- about candidate -->
+                <div class="candidate">
+                    <!-- candidate name -->
+                    <strong>Jitedra tiwari</strong>
+                    <!-- candidate party symbol -->
+                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
+                        style="height: 35px;">
+                    <hr>
+                    <!-- about -->
+                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
+                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
+                        explicabo eius cumque harum deserunt alias blanditiis!</p>
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
+                <!-- candidate profile image -->
+                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                    style="height: 120px;">
+                <!-- about candidate -->
+                <div class="candidate">
+                    <!-- candidate name -->
+                    <strong>Jitedra tiwari</strong>
+                    <!-- candidate party symbol -->
+                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
+                        style="height: 35px;">
+                    <hr>
+                    <!-- about -->
+                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
+                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
+                        explicabo eius cumque harum deserunt alias blanditiis!</p>
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
+                <!-- candidate profile image -->
+                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                    style="height: 120px;">
+                <!-- about candidate -->
+                <div class="candidate">
+                    <!-- candidate name -->
+                    <strong>Jitedra tiwari</strong>
+                    <!-- candidate party symbol -->
+                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
+                        style="height: 35px;">
+                    <hr>
+                    <!-- about -->
+                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
+                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
+                        explicabo eius cumque harum deserunt alias blanditiis!</p>
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
+                <!-- candidate profile image -->
+                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                    style="height: 120px;">
+                <!-- about candidate -->
+                <div class="candidate">
+                    <!-- candidate name -->
+                    <strong>Jitedra tiwari</strong>
+                    <!-- candidate party symbol -->
+                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
+                        style="height: 35px;">
+                    <hr>
+                    <!-- about -->
+                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
+                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
+                        explicabo eius cumque harum deserunt alias blanditiis!</p>
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
+                <!-- candidate profile image -->
+                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                    style="height: 120px;">
+                <!-- about candidate -->
+                <div class="candidate">
+                    <!-- candidate name -->
+                    <strong>Jitedra tiwari</strong>
+                    <!-- candidate party symbol -->
+                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
+                        style="height: 35px;">
+                    <hr>
+                    <!-- about -->
+                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
+                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
+                        explicabo eius cumque harum deserunt alias blanditiis!</p>
+                </div>
+
+            </div>
+
+            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
+                <!-- candidate profile image -->
+                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                    style="height: 120px;">
+                <!-- about candidate -->
+                <div class="candidate">
+                    <!-- candidate name -->
+                    <strong>Jitedra tiwari</strong>
+                    <!-- candidate party symbol -->
+                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
+                        style="height: 35px;">
+                    <hr>
+                    <!-- about -->
+                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
+                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
+                        explicabo eius cumque harum deserunt alias blanditiis!</p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- charts -->
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4 p-3">
+                <canvas id="pieChart"></canvas>
+            </div>
+            <div class="col-md-4 p-3">
+                <canvas id="barChart"></canvas>
+            </div>
+            <div class="col-md-4 p-3">
+                <canvas id="donutChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <!-- voting section -->
+    <div class="container">
+        <div class="row pt-5 pb-5">
+            <div class="col-xs-12 p-5 col-md-6 text-center">
+                <button class="btn btn-dark vote"><i class="fa fa-thumbs-up fa-3x" aria-hidden="true"></i></button><br>
+                <span class="h3"> Vote now</span>
+            </div>
+            <div class="col-xs-12 p-5 col-md-6 text-center">
+                <button class="btn btn-dark vote"><i class="fa fa-sign-in-alt fa-3x"
+                        aria-hidden="true"></i></button><br>
+                <span class="h3">Register</span>
+            </div>
+        </div>
+    </div>
+    <!-- footer -->
+    <section class="footer bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center text-white">
+                    <span class="">&copy; V.O.S</i></span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="jquery/jquery.min.js"></script>
+    <script src="bootstrap/bootstrap.min.js"></script>
+    <script src="moment/moment.min.js"></script>
+    <script src="chartjs/Chart.bundle.min.js"></script>
+    <script>
+        window.onload = function (e) {
+
+            var $clock = $('#time'),
+                eventTime = moment('26-11-2020 08:30:00', 'DD-MM-YYYY HH:mm:ss').unix(),
+                currentTime = moment().unix(),
+                diffTime = eventTime - currentTime,
+                duration = moment.duration(diffTime * 1000, 'milliseconds'),
+                interval = 1000;
+
+            // if time to countdown
+            if (diffTime > 0) {
+
+                // Show clock
+                $clock.show();
+
+                var $d = $('.days');
+                $h = $('.hours');
+                $m = $('.minutes');
+                $s = $('.seconds');
+
+                setInterval(function () {
+
+                    duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
+                    var d = moment.duration(duration).days(),
+                        h = moment.duration(duration).hours(),
+                        m = moment.duration(duration).minutes(),
+                        s = moment.duration(duration).seconds();
+
+                    d = $.trim(d).length === 1 ? '0' + d : d;
+                    h = $.trim(h).length === 1 ? '0' + h : h;
+                    m = $.trim(m).length === 1 ? '0' + m : m;
+                    s = $.trim(s).length === 1 ? '0' + s : s;
+
+                    // show how many hours, minutes and seconds are left
+                    $d.text(d);
+                    $h.text(h);
+                    $m.text(m);
+                    $s.text(s);
+
+                }, interval);
+
+            }
+            $(".banner").css("min-height", window.innerHeight);
+            $(".banner").css("min-width", window.innerwidth);
+        };
+        $(window).resize(() => {
+            $(".banner").css("min-height", window.innerHeight);
+            $(".banner").css("min-width", window.innerwidth);
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            //--------------
+            //- AREA CHART -
+            //--------------
+
+            var areaChartData = {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                datasets: [
+                    {
+                        label: 'Digital Goods',
+                        backgroundColor: 'rgba(60,141,188,0.9)',
+                        borderColor: 'rgba(60,141,188,0.8)',
+                        pointRadius: false,
+                        pointColor: '#3b8bba',
+                        pointStrokeColor: 'rgba(60,141,188,1)',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(60,141,188,1)',
+                        data: [28, 48, 40, 19, 86, 27, 90]
+                    },
+                    {
+                        label: 'Electronics',
+                        backgroundColor: 'rgba(210, 214, 222, 1)',
+                        borderColor: 'rgba(210, 214, 222, 1)',
+                        pointRadius: false,
+                        pointColor: 'rgba(210, 214, 222, 1)',
+                        pointStrokeColor: '#c1c7d1',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(220,220,220,1)',
+                        data: [65, 59, 80, 81, 56, 55, 40]
+                    }
+                ]
+            }
+
+
+            //-------------
+            //- DONUT CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
+            var donutData = {
+                labels: [
+                    'BJP',
+                    'Trinmool',
+                    'Congress',
+                    'AAP',
+                ],
+                datasets: [
+                    {
+                        data: [700, 500, 400, 300],
+                        backgroundColor: ['#f39c12', '#00a65a', '#f56954', '#d2d6de'],
+                    }
+                ]
+            }
+            var donutOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            var donutChart = new Chart(donutChartCanvas, {
+                type: 'doughnut',
+                data: donutData,
+                options: donutOptions
+            })
+
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            var pieData = donutData;
+            var pieOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            var pieChart = new Chart(pieChartCanvas, {
+                type: 'pie',
+                data: pieData,
+                options: pieOptions
+            })
+
+            //-------------
+            //- BAR CHART -
+            //-------------
+            var barChartCanvas = $('#barChart').get(0).getContext('2d')
+            var barChartData = jQuery.extend(true, {}, areaChartData)
+            var temp0 = areaChartData.datasets[0]
+            var temp1 = areaChartData.datasets[1]
+            barChartData.datasets[0] = temp1
+            barChartData.datasets[1] = temp0
+
+            var barChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                datasetFill: false
+            }
+
+            var barChart = new Chart(barChartCanvas, {
+                type: 'bar',
+                data: barChartData,
+                options: barChartOptions
+            })
+        });
+    </script>
+</body>
+
+</html>
