@@ -13,7 +13,11 @@ const nodemailer = require("nodemailer");
 //START
 //=======================================================================================================================================================
 router.get("/", function(req, res) {
-  // Admin.create({ Email: "ritesh@gmail.com", Password: "12345" }, function(
+  // ADMIN ID : ritesh@gmail.com
+  // PASS : 12345
+  // important ----- uncomment the below code and reload the index page once for setting up database
+
+  // Admin.create({ Email: "ritesh@gmail.com", Password: "$2b$08$ZDYPv1F6hssSf6QaNhQPb./6PFuv4FyHuEj4fBYipSAixfcNOPFwi" }, function(
   //   err,
   //   obj
   // ) {
@@ -43,7 +47,7 @@ router.post("/Admin_login", function(req, res) {
         if (err) {
           console.log(err);
         } else if (result == false) {
-          console.log("password did not match");
+          res.send([false, "password did not match"]);
         } else {
           var token = jwt.sign({ data: obj._id }, "blkhrt", {
             expiresIn: "1h"
@@ -51,7 +55,6 @@ router.post("/Admin_login", function(req, res) {
           res
             .cookie("token", token, { maxAge: 3600000, httpOnly: true })
             .send([true]);
-          console.log(result);
         }
       });
     }

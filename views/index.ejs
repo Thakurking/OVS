@@ -4,10 +4,9 @@
 <head>
   <title>ritesh</title>
   <link rel='stylesheet' href='/stylesheets/style.css' />
-  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css">
-  <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-  <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+  <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="bootstrap/bootstrap.css">
+  <link rel="stylesheet" href="chartjs/Chart.min.css">
 </head>
 
 <body>
@@ -37,7 +36,7 @@
           </div>
 
           <div class="form-group">
-            <input type="submit" name="btn" value="Login" id="butn"
+            <input type="button" name="btn" value="Login" id="butn"
               class="btn btn-outline-danger float-right login_btn">
           </div>
 
@@ -45,6 +44,8 @@
       </div>
     </div>
   </div>
+  <script src="jquery/jquery.min.js"></script>
+  <script src="bootstrap/bootstrap.min.js"></script>
   <script>
     $(document).ready(function () {
       $("#butn").click(function () {
@@ -55,17 +56,16 @@
           "Email": admin_id,
           "Password": admin_password
         }
-
         $.ajax({
           url: "Admin_login",
           type: "POST",
           data: { admin_login: JSON.stringify(admin_login) },
           success: function (data) {
             if (data[0] == true) {
-              window.location = "/dashboard";
+              window.location.href = "/dashboard";
             }
             else {
-              alert("wrong user id password");
+              alert(data[1]);
             }
           }, error: function (data) {
             console.log(data);
