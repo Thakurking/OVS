@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel='stylesheet' href='/stylesheets/style.css' /> -->
+    <!-- <link rel="stylesheet" href="fontawesome-free/css/all.min.css"> -->
+    <link rel="stylesheet" href="bootstrap/bootstrap.css">
+    <!-- <link rel="stylesheet" href="chartjs/Chart.min.css"> -->
+    <title>AddCandidate</title>
+</head>
+<body>
+    <form action="" method="POST">
+        <div class="form-row">
+          <div class="col-md-4 mb-3">
+            <label for="validationDefault01">Full name</label>
+            <input type="text" class="form-control" id="Full_Name" placeholder="First name" value="Full Name" required>
+          </div>
+          <div class="col-md-4 mb-3">
+            <label for="validationDefaultUsername">email</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroupPrepend2">@</span>
+              </div>
+              <input type="text" class="form-control" id="Email" placeholder="Email" aria-describedby="inputGroupPrepend2" required>
+            </div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="col-md-6 mb-3">
+            <label for="validationDefault03">phone no</label>
+            <input type="text" class="form-control" id="Phone_No" placeholder="City" required>
+          </div>
+        </div>
+        <div class="form-row">
+            <div class="col-md-6 mb-3">
+              <label for="validationDefault03">aadhar no</label>
+              <input type="text" class="form-control" id="Aadhar_No" placeholder="City" required>
+            </div>
+          </div>
+          <h1>Candidate Image upload</h1>
+          <div class="wrapper">
+            <div class="box">
+              <div class="js--image-preview"></div>
+              <div class="upload-options">
+                <label>
+                  <input type="file" class="image-upload" id="Candidate_Image" accept="image/*" />
+                </label>
+              </div>
+            </div>
+          </div>
+          <h1>Party Symbol</h1>
+          <div class="wrapper">
+            <div class="box">
+              <div class="js--image-preview"></div>
+              <div class="upload-options">
+                <label>
+                  <input type="file" class="image-upload" id="Party_Symbol" accept="image/*" />
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="comment">About Candidate</label>
+            <textarea class="form-control" rows="5" id="About" name="text"></textarea>
+          </div>
+        <button class="btn btn-primary" id="botn" type="submit">Submit form</button>
+      </form>
+      <script src="jquery/jquery.min.js"></script>
+      <script src="bootstrap/bootstrap.min.js"></script>
+      <script>
+        $(document).ready(function () {
+          $("#botn").click(function () {
+            var Full_Name = $("#Full_Name").val();
+            var Email = $("#Email").val();
+            var Phone_No = $("#Phone_No").val();
+            var Aadhar_No = $("#Aadhar_No").val();
+            var About = $("#About").val();
+            var formData = new FormData();
+            formData.append("Candidate_Image", document.getElementById("Candidate_Image").files[0]);
+            formData.append("Party_symbol", document.getElementById("Party_symbol").files[0]);
+            formData.append("Full_Name", Full_Name);
+            formData.append("Email", Email);
+            formData.append("Phone_No", Phone_No);
+            formData.append("Aadhar_No", Aadhar_No);
+            formData.append("About", About);
+            $.ajax({
+              url: "Add_Candidate",
+              type: "POST",
+              data: formData,
+              success: function (data) {
+                window.location.reload();
+              },
+              error: function (data) {
+                console.log(data);
+              }
+            });
+          });
+        });
+      </script>
+</body>
+</html>

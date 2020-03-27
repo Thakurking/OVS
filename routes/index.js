@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 var validator = require("validator");
 /***********Model Modules***********/
 const Admin = require("../model/Admin");
+const Candidate = require("../model/Candidate");
 /***********Nodemailer***********/
 const nodemailer = require("nodemailer");
 
@@ -13,18 +14,21 @@ const nodemailer = require("nodemailer");
 //START
 //=======================================================================================================================================================
 router.get("/", function(req, res) {
-  // Admin.create({ Email: "ritesh@gmail.com", Password: "12345" }, function(
-  //   err,
-  //   obj
-  // ) {
-  //   if (err) {
-  //     console.log(err);
-  //   } else {
-  //     console.log("success");
-  //   }
-  // });
+  // ADMIN ID : ritesh@gmail.com
+  // PASS : 12345
+  // important ----- uncomment the below code and reload the index page once for setting up database
+
+  Admin.create({ Email: "ritesh@gmail.com", Password: "$2b$08$ZDYPv1F6hssSf6QaNhQPb./6PFuv4FyHuEj4fBYipSAixfcNOPFwi" }, function(
+    err,
+    obj
+  ) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log("success");
+    }
+  });
   res.render("index");
-  //blkhrt
 });
 //=======================================================================================================================================================
 //END
@@ -34,7 +38,7 @@ router.get("/", function(req, res) {
 //=======================================================================================================================================================
 router.post("/Admin_login", function(req, res) {
   var Admin_Login = JSON.parse(req.body.admin_login);
-  admins.findOne({ Email: Admin_Login.Email }, function(err, obj) {
+  Admin.findOne({ Email: Admin_Login.Email }, function(err, obj) {
     if (err) {
       console.log(err);
     } else if (obj == null) {
@@ -44,19 +48,19 @@ router.post("/Admin_login", function(req, res) {
         if (err) {
           console.log(err);
         } else if (result == false) {
-          console.log("password did not match");
+          res.send([false, "password did not match"]);
         } else {
           var token = jwt.sign({ data: obj._id }, "blkhrt", {
             expiresIn: "1h"
           });
-          res.cookie("token", token, { maxAge: 3600000, httpOnly: true }).send([true]).redirect("/dashboard");
-          console.log(result);
+          res
+            .cookie("token", token, { maxAge: 3600000, httpOnly: true })
+            .send([true]);
         }
       });
     }
   });
 });
-//blkhrt
 //=======================================================================================================================================================
 //END
 
@@ -74,7 +78,6 @@ function authToken(req, res, next) {
     }
   });
 }
-//blkhrt
 //=======================================================================================================================================================
 //END
 
@@ -90,8 +93,64 @@ router.get("/logout", function(req, res) {
 //Admin Dashboard Page
 //START
 //=======================================================================================================================================================
-router.get("/dashboard", function(req, res) {
-  res.render("dashboard");
+router.get("/dashboard", authToken, function(req, res) {
+  Admin.findOne({ _id: req.profile }, function(err, obj) {
+    if (err) console.log(err);
+    else if (obj == null) console.log("no user found");
+    else {
+      res.render("dashboard" , { admin: obj });
+    }
+  });
+});
+//=======================================================================================================================================================
+//END
+
+//Candidate Adding Starter Page
+//START
+//=======================================================================================================================================================
+router.get("/AddCandidate", authToken, function(req, res) {
+  res.render("AddCandidate");
+});
+//=======================================================================================================================================================
+//END
+
+//Candidate Adding Page Handeling
+//START
+//=======================================================================================================================================================
+router.post("/Add_Candidate", authToken, function(req, res) {
+  console.log("hello");
+  var Candidate_Data = {
+    FullName: req.body.Full_Name,
+    About: req.body.About,
+    Phone: req.body.Phone_No,
+    Email: req.body.Email,
+    Aadhar: req.body.Aadhar_No
+  }
+  if(!req.file) console.log("!!invalide file path");
+  else{
+    Admin.findOne({_id: req.profile}, function(err, obj) {
+      if(err) console.log(err);
+      else if (obj == null) res.send([false, "please try again later"]);
+      else{
+        if(obj.image && false.existsSync(obj.image)){
+          fs.unlink(obj.image, function(err) {
+            if(err) console.log(err);
+          });
+        }
+        Candidate.create(Candidate_Data, function(err, result) {
+          console.log(result);
+          if(err) console.log(err);
+          else res.send(result);
+        });
+      }
+    })
+  }
+  // var Candidate_Data = JSON.parse(req.body.Candidate);
+  // Candidate.create(Candidate_Data, function(err, result) {
+  //   console.log(result);
+  //   if(err) console.log(err);
+  //   else res.send(result);
+  // });
 });
 //=======================================================================================================================================================
 //END
