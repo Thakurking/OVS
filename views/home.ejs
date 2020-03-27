@@ -28,6 +28,7 @@
 
         .banner {
             min-height: 400px;
+            max-height: 500px;
             background: url("img/1.jpg");
             background-size: cover;
             background-position: top;
@@ -93,6 +94,47 @@
 
 
 <body>
+    <!-- Modal -->
+    <div class="modal fade p-5" id="voteAuth" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center text-success msg"></p>
+                    <!-- otp send form -->
+                    <div class="form-group text-center stage1">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="uid" aria-describedby="helpId"
+                                placeholder="enter your Aadhar number" maxlength="12">
+                            <button class="btn btn-success otp-send">Send OTP</button>
+                        </div>
+                        <small id="helpId" class="form-text text-muted mb-1">!warning <i>Enter you Aadhar number
+                                number
+                                without any space </i></small>
+                    </div>
+                    <!-- otp check form -->
+                    <div class="form-group text-center stage2">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="uid" aria-describedby="helpId"
+                                placeholder="enter OTP here" maxlength="12">
+                            <button class="btn btn-success otp-check">verify</button>
+                        </div>
+                        <small id="helpId" class="form-text text-muted mb-1">!warning <i>any Wrong attempt will cancel
+                                your vote</i></small>
+                    </div>
+                </div>
+                <!-- <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save</button>
+                </div> -->
+            </div>
+        </div>
+    </div>
     <section class="banner">
         <nav class="navbar navbar-sticky navbar-expand-sm navbar-dark">
             <div class="container">
@@ -117,18 +159,18 @@
         <!-- countdown-timer -->
         <div class="container" id="time">
             <div class="row">
-                <div class="col-12 text-center pb-3">
+                <div class="col-12 text-center pb-3 mb-4">
                     <!-- election header -->
-                    <h1 class="display-3">Student Union Representative Election</h1>
-                    <h2 class="display-5"> Asansol Enegneering College</h2>
-                    <h2>begins in..</h2>
+                    <h5 class="display-4">Student Union Representative Election</h5>
+                    <h3 class=""> Asansol Enegneering College</h5>
+                        <h4>begins in..</h4>
                 </div>
-                <div class=" col-6 col-md-3 text-center p-4"><span class="h3 days"></span><br><span>Days</span>
+                <div class=" col-3 col-md-3 text-center p-4"><span class="h3 days"></span><br><span>Days</span>
                 </div>
-                <div class="col-6 col-md-3 text-center p-4"><span class="h3 hours"></span><br><span>Hours</span></div>
-                <div class="col-6 col-md-3 text-center p-4"><span class="h3 minutes"></span><br><span>minutes</span>
+                <div class="col-3 col-md-3 text-center p-4"><span class="h3 hours"></span><br><span>Hours</span></div>
+                <div class="col-3 col-md-3 text-center p-4"><span class="h3 minutes"></span><br><span>minutes</span>
                 </div>
-                <div class="col-6 col-md-3 text-center p-4"><span class="h3 seconds"></span><br><span>seconds</span>
+                <div class="col-3 col-md-3 text-center p-4"><span class="h3 seconds"></span><br><span>seconds</span>
                 </div>
                 <div class="text-center move-cont">
                     <a href="#candidate" class="text-white"><i class="fa fa-angle-down fa-2x move"
@@ -138,6 +180,18 @@
             </div>
         </div>
     </section>
+    <!-- voting section -->
+    <div class="container">
+        <div class="row pt-5 pb-5">
+            <div class="col-xs-12 p-5 col-md-12 text-center">
+                <button class="btn text-success btn-light vote" data-toggle="modal" data-target="#voteAuth"
+                    data-backdrop="static" data-keyboard="false"><i class="fa fa-thumbs-up fa-3x"
+                        aria-hidden="true"></i></button><br>
+                <span class="h3 text-success"> Vote now</span>
+            </div>
+        </div>
+    </div>
+
     <!-- candidates -->
     <div class="container">
         <div class="row" id="candidate">
@@ -269,28 +323,14 @@
     <!-- charts -->
     <div class="container mt-5">
         <div class="row">
-            <div class="col-md-4 p-3">
+            <div class="col-12 display-4 text-center">Results
+                <hr>
+            </div>
+            <div class="col-md-6 p-3">
                 <canvas id="pieChart"></canvas>
             </div>
-            <div class="col-md-4 p-3">
-                <canvas id="barChart"></canvas>
-            </div>
-            <div class="col-md-4 p-3">
+            <div class="col-md-6 p-3">
                 <canvas id="donutChart"></canvas>
-            </div>
-        </div>
-    </div>
-    <!-- voting section -->
-    <div class="container">
-        <div class="row pt-5 pb-5">
-            <div class="col-xs-12 p-5 col-md-6 text-center">
-                <button class="btn btn-dark vote"><i class="fa fa-thumbs-up fa-3x" aria-hidden="true"></i></button><br>
-                <span class="h3"> Vote now</span>
-            </div>
-            <div class="col-xs-12 p-5 col-md-6 text-center">
-                <button class="btn btn-dark vote"><i class="fa fa-sign-in-alt fa-3x"
-                        aria-hidden="true"></i></button><br>
-                <span class="h3">Register</span>
             </div>
         </div>
     </div>
@@ -361,40 +401,6 @@
     </script>
     <script>
         $(document).ready(function () {
-            //--------------
-            //- AREA CHART -
-            //--------------
-
-            var areaChartData = {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-                datasets: [
-                    {
-                        label: 'Digital Goods',
-                        backgroundColor: 'rgba(60,141,188,0.9)',
-                        borderColor: 'rgba(60,141,188,0.8)',
-                        pointRadius: false,
-                        pointColor: '#3b8bba',
-                        pointStrokeColor: 'rgba(60,141,188,1)',
-                        pointHighlightFill: '#fff',
-                        pointHighlightStroke: 'rgba(60,141,188,1)',
-                        data: [28, 48, 40, 19, 86, 27, 90]
-                    },
-                    {
-                        label: 'Electronics',
-                        backgroundColor: 'rgba(210, 214, 222, 1)',
-                        borderColor: 'rgba(210, 214, 222, 1)',
-                        pointRadius: false,
-                        pointColor: 'rgba(210, 214, 222, 1)',
-                        pointStrokeColor: '#c1c7d1',
-                        pointHighlightFill: '#fff',
-                        pointHighlightStroke: 'rgba(220,220,220,1)',
-                        data: [65, 59, 80, 81, 56, 55, 40]
-                    }
-                ]
-            }
-
-
-            //-------------
             //- DONUT CHART -
             //-------------
             // Get context with jQuery - using jQuery's .get() method.
@@ -414,7 +420,7 @@
                 ]
             }
             var donutOptions = {
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
                 responsive: true,
             }
             //Create pie or douhnut chart
@@ -432,7 +438,7 @@
             var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
             var pieData = donutData;
             var pieOptions = {
-                maintainAspectRatio: false,
+                maintainAspectRatio: true,
                 responsive: true,
             }
             //Create pie or douhnut chart
@@ -443,27 +449,19 @@
                 options: pieOptions
             })
 
-            //-------------
-            //- BAR CHART -
-            //-------------
-            var barChartCanvas = $('#barChart').get(0).getContext('2d')
-            var barChartData = jQuery.extend(true, {}, areaChartData)
-            var temp0 = areaChartData.datasets[0]
-            var temp1 = areaChartData.datasets[1]
-            barChartData.datasets[0] = temp1
-            barChartData.datasets[1] = temp0
-
-            var barChartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                datasetFill: false
-            }
-
-            var barChart = new Chart(barChartCanvas, {
-                type: 'bar',
-                data: barChartData,
-                options: barChartOptions
-            })
+        });
+        $(".stage2").hide();
+        $(".otp-send").click(function () {
+            var spinner = " <i class='fa fa-spinner text-white' aria-hidden='true'></i>"
+            $(this).append(spinner).prop("disabled", true).closest(".form-group").hide();
+            $(".msg").text("A one time OTP has been send to your registered email");
+            $(".stage2").show();
+        });
+        $(".otp-check").click(function () {
+            var spinner = " <i class='fa fa-spinner text-white' aria-hidden='true'></i>"
+            $(this).append(spinner).prop("disabled", true).closest(".form-group").hide();
+            $(this)
+            $(".msg").html("verified succesfully <br>redirecting to voting page....")
         });
     </script>
 </body>

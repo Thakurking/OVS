@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVS</title>
+
+    <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="chartjs/Chart.min.css">
+    <style>
+        ::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .timer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            width: 50px;
+            height: 50px;
+            background: #333;
+            border-radius: 50%;
+        }
+
+        .time-cont {
+            position: fixed;
+            height: 30px;
+            bottom: 30px;
+            right: 55px;
+            padding: 0 20px 0 20px;
+            border-radius: 20px;
+            z-index: 9999;
+        }
+
+        .status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: red;
+            display: inline-block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- timer -->
+    <div class="t">
+        <div class="time-cont bg-warning text-white border">Manual will auto close in</div>
+        <span class="timer d-flex justify-content-center align-items-center bg-warning text-white border"></span>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade p-5" id="voting-guide" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="modal-header">
+                        <div class="modal-title">
+                        </div>
+                    </div>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptatem, quas commodi repudiandae odio
+                    excepturi, optio dignissimos minus minima hic a, laudantium nulla corporis amet nesciunt. Dolorem
+                    aut praesentium id. Tempora. <br>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloribus, facilis beatae veniam quia
+                    labore vero pariatur cum sit neque quo excepturi perspiciatis a repudiandae praesentium itaque eum,
+                    voluptates iure quas. <br>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. In enim sapiente nulla nam sit, omnis
+                    aliquam vero ipsum, reprehenderit amet quod sint nobis molestias eligendi. Nihil adipisci veritatis
+                    natus ducimus.
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Voluptatem, quas commodi repudiandae odio
+                    excepturi, optio dignissimos minus minima hic a, laudantium nulla corporis amet nesciunt. Dolorem
+                    aut praesentium id. Tempora. <br>
+                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Doloribus, facilis beatae veniam quia
+                    labore vero pariatur cum sit neque quo excepturi perspiciatis a repudiandae praesentium itaque eum,
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <nav class="navbar navbar-sticky navbar-expand-sm navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#"><strong>OVS</strong></a>
+        </div>
+    </nav>
+    <section id="voting-btn">
+        <div class="container">
+            <div class="row mt-5">
+                <div class="col-12 col-md-12">
+                    <table class="table table-dark voting-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Party</th>
+                                <th>status <span class="status ml-2"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data="kblibluliuii">
+                                <td>
+                                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                                        style="height:50px;width:50px">
+                                </td>
+                                <td>
+                                    <span class="h5">BJP</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success btn-sm"><i class="fa fa-thumbs-up"
+                                            aria-hidden="true"></i>
+                                        Vote</button>
+                                </td>
+                            </tr>
+                            <tr data="vkuyvlkvkvkyu">
+                                <td>
+                                    <img src="img/sym1.png" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                                        style="height:50px;width:50px">
+                                </td>
+                                <td>
+                                    <span class="h5">Trinmool </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success btn-sm"><i class="fa fa-thumbs-up"
+                                            aria-hidden="true"></i>
+                                        Vote</button>
+                                </td>
+                            </tr>
+                            <tr data="hvgkjkylvkiv">
+                                <td>
+                                    <img src=" img/sym3.png"
+                                        class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
+                                        style="height:50px;width:50px">
+                                </td>
+                                <td>
+                                    <span class="h5">Congress</span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success btn-sm"><i class="fa fa-thumbs-up"
+                                            aria-hidden="true"></i>
+                                        Vote</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="footer bg-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center text-white">
+                    <span class="">&copy; V.O.S</i></span>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="jquery/jquery.min.js"></script>
+    <script src="bootstrap/bootstrap.min.js"></script>
+    <script src="moment/moment.min.js"></script>
+    <script src="chartjs/Chart.bundle.min.js"></script>
+    <script>
+        window.onload = function (e) {
+            $("#voting-guide").modal({
+                show: true,
+                backdrop: 'static',
+                keyboard: false
+            });
+        }
+        $(document).ready(function () {
+            var s = 10;
+            var mtimer = setInterval(function () {
+                $(".timer").html(s + "s");
+                if (s == 30) $(".time-cont").html("Read manual carefully");
+                if (s == 20) $(".time-cont").html("Invalid attempt can cancel your vote");
+                if (s == 10) $(".time-cont").html("Closing in.....");
+                if (s < 0) {
+                    $(".timer").html("0s");
+                    $(".t").hide();
+                    $('#voting-guide').modal("hide");
+                    clearInterval(mtimer);
+                }
+                s--;
+            }, 1000);
+
+            $(".voting-table tr td button").click(function () {
+                $(this).append(" <i class='fa fa-spinner' aria-hidden='true'></i>");
+                $(":button").prop("diabled", true).addClass("disabled");
+                $(".status").css("background", "lightgreen");
+            });
+        });
+    </script>
+</body>
+
+</html>
