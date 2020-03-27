@@ -3,12 +3,12 @@ const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const CandidateSchema = new Schema({
-    FullName: String,
-    About: String,
-    Phone: String,
-    Email: String,
-    Aadhar: String,
-    Image: String,
-    Symbol: String
+  name: String,
+  about: String,
+  phone: String,
+  email: String,
+  aadhar: String,
+  image: String,
+  symbol: String
 });
 module.exports = mongoose.model("Candidate", CandidateSchema);
