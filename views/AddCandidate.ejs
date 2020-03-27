@@ -29,13 +29,13 @@
         <div class="form-row">
           <div class="col-md-6 mb-3">
             <label for="validationDefault03">phone no</label>
-            <input type="text" class="form-control" id="Phone_No" placeholder="City" required>
+            <input type="text" class="form-control" id="Phone_No" placeholder="Phone" required>
           </div>
         </div>
         <div class="form-row">
             <div class="col-md-6 mb-3">
               <label for="validationDefault03">aadhar no</label>
-              <input type="text" class="form-control" id="Aadhar_No" placeholder="City" required>
+              <input type="text" class="form-control" id="Aadhar_No" placeholder="Aadhar" required>
             </div>
           </div>
           <h1>Candidate Image upload</h1>
@@ -64,26 +64,37 @@
             <label for="comment">About Candidate</label>
             <textarea class="form-control" rows="5" id="About" name="text"></textarea>
           </div>
-        <button class="btn btn-primary" id="botn" type="submit">Submit form</button>
+        <!-- <button class="btn btn-primary" id="botn" type="button">Submit form</button> -->
+        <div class="form-group">
+            <input type="button" name="btn" value="Login" id="botn" class="btn btn-outline-danger float-right login_btn">
+          </div>
       </form>
       <script src="jquery/jquery.min.js"></script>
       <script src="bootstrap/bootstrap.min.js"></script>
       <script>
         $(document).ready(function () {
           $("#botn").click(function () {
+            console.log('hello');
+            var Candidate_Image = document.getElementById("Candidate_Image").files[0];
+            var Name = document.getElementById("Full_Name");
             var Full_Name = $("#Full_Name").val();
             var Email = $("#Email").val();
             var Phone_No = $("#Phone_No").val();
             var Aadhar_No = $("#Aadhar_No").val();
             var About = $("#About").val();
             var formData = new FormData();
-            formData.append("Candidate_Image", document.getElementById("Candidate_Image").files[0]);
-            formData.append("Party_symbol", document.getElementById("Party_symbol").files[0]);
             formData.append("Full_Name", Full_Name);
+            console.log(Full_Name);
+            // formData.append("Candidate_Image", document.getElementById("Candidate_Image").files[0]);
+            // formData.append("Party_symbol", document.getElementById("Party_symbol").files[0]);
+            formData.append("Candidate_Image", Candidate_Image);
+            formData.append("Full_Name", Name);
+            console.log(Name);
             formData.append("Email", Email);
             formData.append("Phone_No", Phone_No);
             formData.append("Aadhar_No", Aadhar_No);
             formData.append("About", About);
+            console.log(About);
             $.ajax({
               url: "Add_Candidate",
               type: "POST",
