@@ -115,10 +115,10 @@ router.post("/loginAuth", function(req, res) {
 //=======================================================================================================================================================
 function authToken(req, res, next) {
   const token = req.cookies.token;
-  if (!token) res.redirect("/login");
+  if (!token) res.redirect("/admin");
   else {
     jwt.verify(token, "blkhrt", function(err, decoded) {
-      if (err) res.redirect("/login");
+      if (err) res.redirect("/admin");
       else {
         req.profile = decoded.data;
         next();
