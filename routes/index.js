@@ -45,14 +45,20 @@ var storage = multer.diskStorage({
 var upload = multer({ storage: storage });
 
 
-//Admin Login Page Starter
-//START
+//#region home or index Page
 //=======================================================================================================================================================
 router.get("/", function(req, res) {
+  res.render("index");
+});
+//=======================================================================================================================================================
+//#endregion
+
+//#region admin or dahsboard Page
+//=======================================================================================================================================================
+router.get("/admin", function(req, res, next) {
   // ADMIN ID : ritesh@gmail.com
   // PASS : 12345
   // important ----- uncomment and reload the index page once for setting up database
-
   // Admin.create({ Email: "ritesh@gmail.com", Password: "$2b$08$ZDYPv1F6hssSf6QaNhQPb./6PFuv4FyHuEj4fBYipSAixfcNOPFwi" }, function(
   //   err,
   //   obj
@@ -63,13 +69,20 @@ router.get("/", function(req, res) {
   //     console.log("success");
   //   }
   // });
-  res.render("index");
+  const token = req.cookies.token;
+  if (!token) res.redirect("/login");
+  else {
+    jwt.verify(token, "blkhrt", function(err, decoded) {
+      if (err) res.redirect("/login");
+      else {
+        res.render("dashboard");
+      }
+    });
+  }
 });
-//=======================================================================================================================================================
-//END
+//#endregion
 
-//Admin Login Request Handel
-//START
+// #region login page
 //=======================================================================================================================================================
 router.post("/Admin_login", function(req, res) {
   var Admin_Login = JSON.parse(req.body.admin_login);
@@ -97,24 +110,25 @@ router.post("/Admin_login", function(req, res) {
   });
 });
 //=======================================================================================================================================================
-//END
+//#endregion
 
-//TOKEN Middleware
-//START
+//#region auth TOKEN Middleware
 //=======================================================================================================================================================
 function authToken(req, res, next) {
   const token = req.cookies.token;
-  if (!token) res.redirect("/");
-  jwt.verify(token, "blkhrt", function(err, decoded) {
-    if (err) console.log(err);
-    else {
-      req.profile = decoded.data;
-      next();
-    }
-  });
+  if (!token) res.redirect("/login");
+  else {
+    jwt.verify(token, "blkhrt", function(err, decoded) {
+      if (err) res.redirect("/login");
+      else {
+        req.profile = decoded.data;
+        next();
+      }
+    });
+  }
 }
 //=======================================================================================================================================================
-//END
+//#endregion
 
 //Logout Handling
 //START
@@ -143,8 +157,11 @@ router.get("/dashboard", authToken, function(req, res) {
 //Candidate Adding Starter Page
 //START
 //=======================================================================================================================================================
-router.get("/AddCandidate", authToken, function(req, res) {
-  res.render("AddCandidate");
+router.get("/candidate", authToken, function(req, res) {
+  Candidate.find({}, (err, result) => {
+    if (err) console.log(err);
+    else res.render("candidate", { data: result });
+  });
 });
 //=======================================================================================================================================================
 //END
@@ -152,7 +169,7 @@ router.get("/AddCandidate", authToken, function(req, res) {
 //Candidate Adding Page Handeling
 //START
 //=======================================================================================================================================================
-router.post("/addcandidate", authToken, upload.array("image", 2), function(
+router.post("/addCandidate", authToken, upload.array("image", 2), function(
   req,
   res
 ) {
@@ -165,6 +182,7 @@ router.post("/addcandidate", authToken, upload.array("image", 2), function(
     email: req.body.email,
     aadhar: req.body.aadhar,
     image: imgPath.replace("\\", "/"),
+    party: req.body.party,
     symbol: symbPath.replace("\\", "/")
   };
   if (
@@ -172,6 +190,7 @@ router.post("/addcandidate", authToken, upload.array("image", 2), function(
     Candidate_Data.email != "" &&
     Candidate_Data.phone != "" &&
     Candidate_Data.aadhar != "" &&
+    Candidate_Data.party != "" &&
     Candidate_Data.about != ""
   ) {
     Candidate.create(Candidate_Data, function(err, result) {
@@ -183,16 +202,7 @@ router.post("/addcandidate", authToken, upload.array("image", 2), function(
 //=======================================================================================================================================================
 //END
 
-//OVS Home Page
-//START
-//=======================================================================================================================================================
-router.get("/home", function(req, res) {
-  res.render("home");
-});
-//=======================================================================================================================================================
-//END
-
-//Voting Page
+//vote
 //START
 //=======================================================================================================================================================
 router.get("/vote", function(req, res) {
