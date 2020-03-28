@@ -9,6 +9,7 @@ const CandidateSchema = new Schema({
   email: String,
   aadhar: String,
   image: String,
+  party: String,
   symbol: String
 });
 module.exports = mongoose.model("Candidate", CandidateSchema);
