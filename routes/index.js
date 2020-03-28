@@ -53,14 +53,6 @@ router.get("/", function(req, res) {
 //=======================================================================================================================================================
 //#endregion
 
-//#region home or index Page
-//=======================================================================================================================================================
-router.get("/login", function(req, res) {
-  res.render("login");
-});
-//=======================================================================================================================================================
-//#endregion
-
 //#region admin or dahsboard Page
 //=======================================================================================================================================================
 router.get("/admin", function(req, res, next) {
@@ -78,12 +70,12 @@ router.get("/admin", function(req, res, next) {
   //   }
   // });
   const token = req.cookies.token;
-  if (!token) res.redirect("/login");
+  if (!token) res.render("login");
   else {
     jwt.verify(token, "blkhrt", function(err, decoded) {
-      if (err) res.redirect("/login");
+      if (err) res.render("login");
       else {
-        res.render("dashboard");
+        res.redirect("/dashboard");
       }
     });
   }
