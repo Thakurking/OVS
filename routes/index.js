@@ -44,7 +44,6 @@ var storage = multer.diskStorage({
 });
 var upload = multer({ storage: storage });
 
-
 //#region home or index Page
 //=======================================================================================================================================================
 router.get("/", function(req, res) {
@@ -204,11 +203,5 @@ router.get("/vote", function(req, res) {
   res.render("voting");
 });
 //=======================================================================================================================================================
-<<<<<<< HEAD
-//END
-
-module.exports = router;
-=======
 //#endregion
 module.exports = router;
->>>>>>> 3995abe85492f07d5f68045493fd85811891b0a7
