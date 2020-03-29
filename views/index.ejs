@@ -89,6 +89,29 @@
             /* border: .1rem solid #333; */
             display: inline-block;
         }
+
+        .p-img {
+            margin-top: 15px;
+            height: 120px !important;
+            width: 120px !important;
+            border-radius: 50% !important;
+            overflow: hidden !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            display: inline-block !important;
+        }
+
+        .s-img {
+            height: 30px !important;
+            width: 30px !important;
+            border-radius: 50% !important;
+            overflow: hidden !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            float: right;
+        }
     </style>
 </head>
 
@@ -198,126 +221,28 @@
             <div class="col-12 text-center display-4 p-3">
                 Candidates
             </div>
-
-            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
-                <!-- candidate profile image -->
-                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
-                    style="height: 120px;">
-                <!-- about candidate -->
-                <div class="candidate">
-                    <!-- candidate name -->
-                    <strong>Jitedra tiwari</strong>
-                    <!-- candidate party symbol -->
-                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
-                        style="height: 35px;">
-                    <hr>
-                    <!-- about -->
-                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
-                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
-                        explicabo eius cumque harum deserunt alias blanditiis!</p>
+            <% if(cad){%>
+            <% for(i=0;i<cad.length;i++){ %>
+            <div class="col-12 col-md-6 img-thumbnail">
+                <div class="row">
+                    <div class="col-3 p-2">
+                        <!-- candidate profile image -->
+                        <div class="p-img" style="background: url('<%=cad[i].image%>');"></div>
+                    </div>
+                    <!-- about candidate -->
+                    <div class="candidate col-9">
+                        <!-- candidate name -->
+                        <strong><%=cad[i].name%></strong>
+                        <!-- candidate party symbol -->
+                        <div class="s-img" style="background:url('<%=cad[i].symbol%>')"></div>
+                        <small class="float-right text-muted mr-2 mt-2"><%=cad[i].party%></small>
+                        <hr>
+                        <!-- about -->
+                        <p class="small p-3"><%=cad[i].about%></p>
+                    </div>
                 </div>
-
             </div>
-
-            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
-                <!-- candidate profile image -->
-                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
-                    style="height: 120px;">
-                <!-- about candidate -->
-                <div class="candidate">
-                    <!-- candidate name -->
-                    <strong>Jitedra tiwari</strong>
-                    <!-- candidate party symbol -->
-                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
-                        style="height: 35px;">
-                    <hr>
-                    <!-- about -->
-                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
-                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
-                        explicabo eius cumque harum deserunt alias blanditiis!</p>
-                </div>
-
-            </div>
-
-            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
-                <!-- candidate profile image -->
-                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
-                    style="height: 120px;">
-                <!-- about candidate -->
-                <div class="candidate">
-                    <!-- candidate name -->
-                    <strong>Jitedra tiwari</strong>
-                    <!-- candidate party symbol -->
-                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
-                        style="height: 35px;">
-                    <hr>
-                    <!-- about -->
-                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
-                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
-                        explicabo eius cumque harum deserunt alias blanditiis!</p>
-                </div>
-
-            </div>
-
-            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
-                <!-- candidate profile image -->
-                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
-                    style="height: 120px;">
-                <!-- about candidate -->
-                <div class="candidate">
-                    <!-- candidate name -->
-                    <strong>Jitedra tiwari</strong>
-                    <!-- candidate party symbol -->
-                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
-                        style="height: 35px;">
-                    <hr>
-                    <!-- about -->
-                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
-                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
-                        explicabo eius cumque harum deserunt alias blanditiis!</p>
-                </div>
-
-            </div>
-
-            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
-                <!-- candidate profile image -->
-                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
-                    style="height: 120px;">
-                <!-- about candidate -->
-                <div class="candidate">
-                    <!-- candidate name -->
-                    <strong>Jitedra tiwari</strong>
-                    <!-- candidate party symbol -->
-                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
-                        style="height: 35px;">
-                    <hr>
-                    <!-- about -->
-                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
-                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
-                        explicabo eius cumque harum deserunt alias blanditiis!</p>
-                </div>
-
-            </div>
-
-            <div class="col-12 col-md-6 d-flex align-items-center justify-content-between p-3 img-thumbnail">
-                <!-- candidate profile image -->
-                <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid mr-2"
-                    style="height: 120px;">
-                <!-- about candidate -->
-                <div class="candidate">
-                    <!-- candidate name -->
-                    <strong>Jitedra tiwari</strong>
-                    <!-- candidate party symbol -->
-                    <img src="img/sym2.svg" class="rounded-circle img-thumbnail mxy-auto img-fluid float-right"
-                        style="height: 35px;">
-                    <hr>
-                    <!-- about -->
-                    <p class="small">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Laborum dolore enim
-                        necessitatibus quos cupiditate alias quam saepe! Dicta tempora labore, expedita dolor voluptate
-                        explicabo eius cumque harum deserunt alias blanditiis!</p>
-                </div>
-
-            </div>
+            <% } }%>
         </div>
     </div>
     <!-- charts -->
