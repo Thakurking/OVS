@@ -9,6 +9,7 @@ var multer = require("multer");
 /***********Model Modules***********/
 const Admin = require("../model/Admin");
 const Candidate = require("../model/Candidate");
+const Voter = require("../model/Voter");
 /***********Nodemailer***********/
 const nodemailer = require("nodemailer");
 
@@ -368,9 +369,9 @@ router.post("/voterDel", function(req, res) {
 //START
 //=======================================================================================================================================================
 router.post("/voterUpdate", function(req, res) {
-  var Candidate_Data = JSON.parse(req.body.candidate);
+  var voter = JSON.parse(req.body.voter);
   var u_id = req.body.id;
-  Voter.update({ _id: u_id }, { $set: Candidate_Data }, function(err, result) {
+  Voter.update({ _id: u_id }, { $set: voter }, function(err, result) {
     if (err) console.log(err);
     else res.send(result);
   });
