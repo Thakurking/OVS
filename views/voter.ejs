@@ -56,7 +56,7 @@
             </div>
             <!-- phone number -->
             <div class="form-group">
-              <input type="text" class="form-control" id="phno" placeholder="Phone number">
+              <input type="text" class="form-control" id="phone" placeholder="Phone number">
             </div>
             <!-- aadhar number -->
             <div class="form-group">
@@ -127,7 +127,7 @@
               </tr>
             </thead>
             <tbody>
-              <% for (i=0 ; i<data.length; i++){%>
+              <% for (i=0 ; i<data.length; i++){ %>
               <tr>
                 <td class="nm"><%=data[i].name%></td>
                 <td class="em"><%=data[i].email%></td>
@@ -171,25 +171,33 @@
 //=======================================================================================================================================================
       //END
 
-
        //Voter Adding Function
       //START
 //=======================================================================================================================================================
       $("#botn").click(function () {
-        var formData = new FormData();
-        formData.append("name", $("#name").val());
-        formData.append("email", $("#email").val());
-        formData.append("phno", $("#phno").val());
-        formData.append("aadhar", $("#aadhar").val());
+
+        var voter_name = $("#name").val();
+        var voter_phone = $("#phone").val();
+        var voter_aadhar = $("#aadhar").val();
+        var voter_email = $("#email").val();
+
+        var voter = {
+          "name": voter_name,
+          "email": voter_email,
+          "aadhar": voter_aadhar,
+          "phone": voter_phone
+        }
+        console.log(voter);
+
         $.ajax({
           url: "votercreate",
           type: "POST",
-          data: formData,
-          contentType: false,
-          processData: false,
+          data: {voter: JSON.stringify(voter) },
+          // contentType: false,
+          // processData: false,
           success: function (data) {
-            if (data[0] == false) $(".err-msg").append(data[1]);
-            else window.location.reload();
+            console.log(data);
+            window.location.reload();
           },
           error: function (data) {
             console.log(data);
@@ -199,28 +207,27 @@
 //=======================================================================================================================================================
       //END
 
-
        //Voter Update Function
       //START
 //=======================================================================================================================================================
 $("#VoterEdit").click(function () {
             var id = $(this).val();
-            $("#cname").val($(this).closest('tr').find('.nm').text());
-            $("#cemail").val($(this).closest('tr').find('.em').text());
-            $("#cphone").val($(this).closest('tr').find('.ph').text());
-            $("#caadhar").val($(this).closest('tr').find('.aa').text());
+            $("#vname").val($(this).closest('tr').find('.nm').text());
+            $("#vemail").val($(this).closest('tr').find('.em').text());
+            $("#vphone").val($(this).closest('tr').find('.ph').text());
+            $("#vaadhar").val($(this).closest('tr').find('.aa').text());
 
             $('.Updsubmit').click(function () {
-                var candidate = {
-                    "name": $('#uname').val(),
-                    "email": $('#uspeciality').val(),
-                    "phone": $('#udegree').val(),
-                    "aadhar": $('#uexperince').val()
+                var voter = {
+                    "name": $('#vname').val(),
+                    "email": $('#vemail').val(),
+                    "phone": $('#vhone').val(),
+                    "aadhar": $('#vaadhar').val()
                 }
                 $.ajax({
-                    url: "candidateupdate",
+                    url: "votereupdate",
                     type: "POST",
-                    data: { candidate: JSON.stringify(candidate), id: id },
+                    data: { voter: JSON.stringify(voter), id: id },
                     success: function (data) {
                         window.location.reload();
                     },

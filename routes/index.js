@@ -7,13 +7,15 @@ const jwt = require("jsonwebtoken");
 var validator = require("validator");
 const fs = require("fs");
 var multer = require("multer");
-/***********Model Modules***********/
+/***********DATABASE Model Modules***********/
 const Admin = require("../model/Admin");
 const Candidate = require("../model/Candidate");
 const Voter = require("../model/Voter");
 /***********Nodemailer***********/
 const nodemailer = require("nodemailer");
-/********************END OF LINE********************/
+/***********CSV To JSON***********/
+// const csv = require("csvtojson");
+/********************END OF MODULES********************/
 
 //Multer Path And destination settiings for image upload functions
 //START
@@ -215,7 +217,7 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
 //#endregion
 
 
-//Voter Adding Starter Page
+//Voters Adding Starter Page
 //START
 //=======================================================================================================================================================
 router.get("/voter", authToken, function(req, res) {
@@ -232,16 +234,12 @@ router.get("/voter", authToken, function(req, res) {
 //START
 //=======================================================================================================================================================
 router.post("/votercreate", authToken, function(req, res) {
-  var Voter_Data = {
-    name: req.body.name,
-    phone: req.body.phno,
-    email: req.body.email,
-    aadhar: req.body.aadhar
-  };
-  if (Voter_Data.name != "" && Voter_Data.email != "" && Voter_Data.phone != "" && Voter_Data.aadhar != "") {
-    Voter.create(Voter_Data, function(err, result) {
+  var voter = JSON.parse(req.body.voter);
+  console.log(voter);
+  if (voter.name != "" && voter.email != "" && voter.phone != "" && voter.aadhar != "") {
+    Voter.create(voter, function(err, result) {
       if (err) console.log(err);
-      else res.send([true]);
+      else res.send(result);
     });
   } else res.send([false, "feilds cannot be empty"]);
 });
@@ -265,10 +263,10 @@ router.post("/voterdel", function(req, res) {
 //Voter Update Request
 //START
 //=======================================================================================================================================================
-router.post("/candidateupdate", function(req, res) {
-  var Candidate_Data = JSON.parse(req.body.candidate);
+router.post("/voterupdate", function(req, res) {
+  var Voter_Data = JSON.parse(req.body.voter);
   var u_id = req.body.id;
-  Voter.update({ _id: u_id }, { $set: Candidate_Data }, function(err, result) {
+  Voter.update({ _id: u_id }, { $set: Voter_Data }, function(err, result) {
     if (err) console.log(err);
     else res.send(result);
   });
