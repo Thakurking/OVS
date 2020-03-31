@@ -319,6 +319,65 @@ router.post("/candidateDetailUpdate", authToken, async function(req, res) {
 //=======================================================================================================================================================
 //#endregion
 
+//Voter Adding Starter Page
+//START
+//=======================================================================================================================================================
+router.get("/voter", authToken, function(req, res) {
+  Voter.find({}, (err, result) => {
+    if (err) console.log(err);
+    else res.render("voter", { data: result });
+  });
+});
+//=======================================================================================================================================================
+//END
+
+//Voter Add Request
+//START
+//=======================================================================================================================================================
+router.post("/voterCreate", authToken, function(req, res) {
+  var voter = JSON.parse(req.body.voter);
+  if (
+    voter.name != "" &&
+    voter.email != "" &&
+    voter.phone != "" &&
+    voter.aadhar != ""
+  ) {
+    Voter.create(voter, function(err, result) {
+      if (err) console.log(err);
+      else res.send([true]);
+    });
+  } else res.send([false, "feilds cannot be empty"]);
+});
+//=======================================================================================================================================================
+//END
+
+//Voter Delete Request
+//START
+//=======================================================================================================================================================
+router.post("/voterDel", function(req, res) {
+  var d_id = req.body.del_id;
+  Voter.deleteOne({ _id: d_id }, function(err, result) {
+    if (err) console.log(err);
+    else res.send(result);
+  });
+});
+//=======================================================================================================================================================
+//END
+
+//Voter Update Request
+//START
+//=======================================================================================================================================================
+router.post("/voterUpdate", function(req, res) {
+  var Candidate_Data = JSON.parse(req.body.candidate);
+  var u_id = req.body.id;
+  Voter.update({ _id: u_id }, { $set: Candidate_Data }, function(err, result) {
+    if (err) console.log(err);
+    else res.send(result);
+  });
+});
+//=======================================================================================================================================================
+//END
+
 //#region voters admin page
 //=======================================================================================================================================================
 router.get("/vote", function(req, res) {
