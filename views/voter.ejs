@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="bootstrap/bootstrap.css">
+  <title>Candidate</title>
+</head>
+<style>
+  .candidateImageWrapper,
+  .partySymbolWrapper {
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid #333;
+    background-size: cover !important;
+    background-position: center !important;
+  }
+
+  #candidateImage,
+  #partySymbol {
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+  }
+</style>
+
+<body>
+  <!-- Modal -->
+  <div class="modal fade" id="candidateAddModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body row">
+          <!-- msg -->
+          <div class="col-12 succes-msg text-success text-center"></div>
+          <div class="col-12 err-msg text-success text-danger"></div>
+          <!-- left part -->
+          <!-- right  part -->
+          <div class="col-8 col-md-8">
+            <!--candidate name-->
+            <div class="form-group">
+              <input type="text" class="form-control" id="name" placeholder="Full name">
+            </div>
+            <!-- email -->
+            <div class="form-group">
+              <input type="email" class="form-control" id="email" placeholder="Email">
+            </div>
+            <!-- phone number -->
+            <div class="form-group">
+              <input type="text" class="form-control" id="phno" placeholder="Phone number">
+            </div>
+            <!-- aadhar number -->
+            <div class="form-group">
+              <input type="text" class="form-control" id="aadhar" placeholder="Aadhar number" maxlength="12"
+                minlength="12">
+            </div>
+            
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button class="btn btn-primary disabled" id="botn" type="button" disabled>Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container">
+      <a class="navbar-brand" href="#">OVS</a>
+      <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId"
+        aria-controls="collapsibleNavId" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="collapsibleNavId">
+        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Link</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown" aria-haspopup="true"
+              aria-expanded="false">Dropdown</a>
+            <div class="dropdown-menu" aria-labelledby="dropdownId">
+              <a class="dropdown-item" href="#">Action 1</a>
+              <a class="dropdown-item" href="#">Action 2</a>
+            </div>
+          </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0">
+          <input class="form-control mr-sm-2" type="text" placeholder="Search">
+          <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+  <section id="CandidateTable">
+    <div class="container">
+      <div class="row mt-3">
+        <div class="col-12 text-right">
+          <h4 class="float-left">Candidtaes</h4>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#candidateAddModal">
+            Add new +
+          </button>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-12">
+          <table class="table table-responsive">
+            <thead>
+              <tr>
+                <th></th>
+                <th>name</th>
+                <th>email</th>
+                <th>phno</th>
+                <th>aadhar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% for (i=0 ; i<data.length; i++){%>
+              <tr>
+                <td class="nm"><%=data[i].name%></td>
+                <td class="em"><%=data[i].email%></td>
+                <td class="ph"><%=data[i].phone%></td>
+                <td class="aa"><%=data[i].aadhar%></td>
+                <td>
+                    <button class="btn btn-success" id="VoterEdit" value="<%=data[i]._id%>" >
+                    <i class="fas fa-edit" aria-hidden="true"></i>
+                    </button>
+                </td>
+                <td>
+                    <button class="btn btn-danger" id="VoterDel" value="<%=data[i]._id%>" >
+                    <i class="fa fa-trash" aria-hidden="true"></i>
+                    </button>
+                </td>
+              </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="jquery/jquery.min.js"></script>
+  <script src="bootstrap/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+
+       //FrontEnd Validation
+      //START
+//=======================================================================================================================================================
+      $(":input").keyup(function () {
+        if ($("#name").val() != "" && $("#email").val() != "" && $("#phno").val() != "" &&  $("#aadhar").val() != "") {
+          $("#botn").prop("disabled", false).removeClass("disabled");
+        }
+        else {
+          $("#botn").prop("disabled", true).addClass("disabled");
+        }
+      });
+//=======================================================================================================================================================
+      //END
+
+
+       //Voter Adding Function
+      //START
+//=======================================================================================================================================================
+      $("#botn").click(function () {
+        var formData = new FormData();
+        formData.append("name", $("#name").val());
+        formData.append("email", $("#email").val());
+        formData.append("phno", $("#phno").val());
+        formData.append("aadhar", $("#aadhar").val());
+        $.ajax({
+          url: "votercreate",
+          type: "POST",
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function (data) {
+            if (data[0] == false) $(".err-msg").append(data[1]);
+            else window.location.reload();
+          },
+          error: function (data) {
+            console.log(data);
+          }
+        });
+      });
+//=======================================================================================================================================================
+      //END
+
+
+       //Voter Update Function
+      //START
+//=======================================================================================================================================================
+$("#VoterEdit").click(function () {
+            var id = $(this).val();
+            $("#cname").val($(this).closest('tr').find('.nm').text());
+            $("#cemail").val($(this).closest('tr').find('.em').text());
+            $("#cphone").val($(this).closest('tr').find('.ph').text());
+            $("#caadhar").val($(this).closest('tr').find('.aa').text());
+
+            $('.Updsubmit').click(function () {
+                var candidate = {
+                    "name": $('#uname').val(),
+                    "email": $('#uspeciality').val(),
+                    "phone": $('#udegree').val(),
+                    "aadhar": $('#uexperince').val()
+                }
+                $.ajax({
+                    url: "candidateupdate",
+                    type: "POST",
+                    data: { candidate: JSON.stringify(candidate), id: id },
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+
+        });
+//=======================================================================================================================================================
+        //END
+
+       //Voter Delete Function
+      //START
+//=======================================================================================================================================================
+      $("#VoterDel").click(function () {
+            var btn_id = $(this).val();
+            $.ajax({
+                url: "voterdel",
+                type: "POST",
+                data: { del_id: btn_id },
+                success: function (data) {
+                },
+                error: function (err) {
+                    console.log(err);
+                }
+            });
+        });
+//=======================================================================================================================================================
+        //END
+
+    });
+  </script>
+</body>
+
+</html>

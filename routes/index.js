@@ -1,3 +1,4 @@
+/***********START MODULES***********/
 var express = require("express");
 var router = express.Router();
 /**********Password Hashing And Validator Module**********/
@@ -9,9 +10,14 @@ var multer = require("multer");
 /***********Model Modules***********/
 const Admin = require("../model/Admin");
 const Candidate = require("../model/Candidate");
+const Voter = require("../model/Voter");
 /***********Nodemailer***********/
 const nodemailer = require("nodemailer");
+/********************END OF LINE********************/
 
+//Multer Path And destination settiings for image upload functions
+//START
+//=======================================================================================================================================================
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
     if (
@@ -43,6 +49,9 @@ var storage = multer.diskStorage({
   }
 });
 var upload = multer({ storage: storage });
+//=======================================================================================================================================================
+//END
+
 
 //#region home or index Page
 //=======================================================================================================================================================
@@ -204,6 +213,68 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
 });
 //=======================================================================================================================================================
 //#endregion
+
+
+//Voter Adding Starter Page
+//START
+//=======================================================================================================================================================
+router.get("/voter", authToken, function(req, res) {
+  Voter.find({}, (err, result) => {
+    if (err) console.log(err);
+    else res.render("voter", { data: result });
+  });
+});
+//=======================================================================================================================================================
+//END
+
+
+//Voter Add Request
+//START
+//=======================================================================================================================================================
+router.post("/votercreate", authToken, function(req, res) {
+  var Voter_Data = {
+    name: req.body.name,
+    phone: req.body.phno,
+    email: req.body.email,
+    aadhar: req.body.aadhar
+  };
+  if (Voter_Data.name != "" && Voter_Data.email != "" && Voter_Data.phone != "" && Voter_Data.aadhar != "") {
+    Voter.create(Voter_Data, function(err, result) {
+      if (err) console.log(err);
+      else res.send([true]);
+    });
+  } else res.send([false, "feilds cannot be empty"]);
+});
+//=======================================================================================================================================================
+//END
+
+
+//Voter Delete Request
+//START
+//=======================================================================================================================================================
+router.post("/voterdel", function(req, res) {
+  var d_id = req.body.del_id;
+  Voter.remove({ _id: d_id }, function(err, result) {
+    if (err) console.log(err);
+    else res.send(result);
+  });
+});
+//=======================================================================================================================================================
+//END
+
+//Voter Update Request
+//START
+//=======================================================================================================================================================
+router.post("/candidateupdate", function(req, res) {
+  var Candidate_Data = JSON.parse(req.body.candidate);
+  var u_id = req.body.id;
+  Voter.update({ _id: u_id }, { $set: Candidate_Data }, function(err, result) {
+    if (err) console.log(err);
+    else res.send(result);
+  });
+});
+//=======================================================================================================================================================
+//END
 
 //#region voting page
 //=======================================================================================================================================================
