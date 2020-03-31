@@ -9,11 +9,12 @@ var multer = require("multer");
 /***********Model Modules***********/
 const Admin = require("../model/Admin");
 const Candidate = require("../model/Candidate");
+const event = require("../model/event");
 /***********Nodemailer***********/
 const nodemailer = require("nodemailer");
 
 var storage = multer.diskStorage({
-  destination: function(req, file, callback) {
+  destination: function (req, file, callback) {
     if (
       file.mimetype === "image/jpeg" ||
       file.mimetype === "image/jpg" ||
@@ -29,7 +30,7 @@ var storage = multer.diskStorage({
       callback(null, "./uploads");
     } else callback(true, "");
   },
-  filename: function(req, file, callback) {
+  filename: function (req, file, callback) {
     if (file.mimetype === "image/jpg") callback(null, Date.now() + ".jpg");
     else if (file.mimetype === "image/jpeg")
       callback(null, Date.now() + ".jpeg");
@@ -46,18 +47,17 @@ var upload = multer({ storage: storage });
 
 //#region home or index Page
 //=======================================================================================================================================================
-router.get("/", function(req, res) {
-  Candidate.find({}, (err, result) => {
-    if (err) console.log(err);
-    else res.render("index", { cad: result });
-  });
+router.get("/", async function (req, res) {
+  let result = await Candidate.find({});
+  let result1 = await event.find({ id: "1" });
+  res.render("index", { cad: result, event: result1 });
 });
 //=======================================================================================================================================================
 //#endregion
 
 //#region admin login Page
 //=======================================================================================================================================================
-router.get("/admin", function(req, res, next) {
+router.get("/admin", function (req, res, next) {
   // ADMIN ID : ritesh@gmail.com
   // PASS : 12345
   // important ----- uncomment and reload the index page once for setting up database
@@ -74,7 +74,7 @@ router.get("/admin", function(req, res, next) {
   const token = req.cookies.token;
   if (!token) res.render("login");
   else {
-    jwt.verify(token, "blkhrt", function(err, decoded) {
+    jwt.verify(token, "blkhrt", function (err, decoded) {
       if (err) res.render("login");
       else {
         res.redirect("/dashboard");
@@ -86,15 +86,15 @@ router.get("/admin", function(req, res, next) {
 
 // #region login request handel
 //=======================================================================================================================================================
-router.post("/loginAuth", function(req, res) {
+router.post("/loginAuth", function (req, res) {
   var Admin_Login = JSON.parse(req.body.admin_login);
-  Admin.findOne({ Email: Admin_Login.Email }, function(err, obj) {
+  Admin.findOne({ Email: Admin_Login.Email }, function (err, obj) {
     if (err) {
       console.log(err);
     } else if (obj == null) {
       res.send([false, "no user found"]);
     } else {
-      bcrypt.compare(Admin_Login.Password, obj.Password, function(err, result) {
+      bcrypt.compare(Admin_Login.Password, obj.Password, function (err, result) {
         if (err) {
           console.log(err);
         } else if (result == false) {
@@ -120,7 +120,7 @@ function authToken(req, res, next) {
   const token = req.cookies.token;
   if (!token) res.redirect("/admin");
   else {
-    jwt.verify(token, "blkhrt", function(err, decoded) {
+    jwt.verify(token, "blkhrt", function (err, decoded) {
       if (err) res.redirect("/admin");
       else {
         req.profile = decoded.data;
@@ -134,7 +134,7 @@ function authToken(req, res, next) {
 
 //#region Logout Handling
 //=======================================================================================================================================================
-router.get("/logout", function(req, res) {
+router.get("/logout", function (req, res) {
   res.clearCookie("token").redirect("/");
 });
 //=======================================================================================================================================================
@@ -142,12 +142,21 @@ router.get("/logout", function(req, res) {
 
 //#region Admin Dashboard Page
 //=======================================================================================================================================================
-router.get("/dashboard", authToken, function(req, res) {
-  Admin.findOne({ _id: req.profile }, function(err, obj) {
+router.get("/dashboard", authToken, function (req, res) {
+  Admin.findOne({ _id: req.profile }, function (err, obj) {
     if (err) console.log(err);
     else if (obj == null) console.log("no user found");
     else {
       res.render("dashboard", { admin: obj });
+    }
+  });
+});
+
+router.post("/createEvent", authToken, function (req, res) {
+  event.create(JSON.parse(req.body.event), function (err, obj) {
+    if (err) console.log(err);
+    else {
+      res.send(obj);
     }
   });
 });
@@ -156,7 +165,7 @@ router.get("/dashboard", authToken, function(req, res) {
 
 //#region Candidate admin Page
 //=======================================================================================================================================================
-router.get("/candidate", authToken, async function(req, res) {
+router.get("/candidate", authToken, async function (req, res) {
   await Candidate.find({}, (err, result) => {
     if (err) console.log(err);
     else res.render("candidate", { data: result });
@@ -167,7 +176,7 @@ router.get("/candidate", authToken, async function(req, res) {
 
 //#region Candidate add request
 //=======================================================================================================================================================
-router.post("/addCandidate", authToken, upload.array("image", 2), function(
+router.post("/addCandidate", authToken, upload.array("image", 2), function (
   req,
   res
 ) {
@@ -191,7 +200,7 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
     Candidate_Data.party != "" &&
     Candidate_Data.about != ""
   ) {
-    Candidate.create(Candidate_Data, function(err, result) {
+    Candidate.create(Candidate_Data, function (err, result) {
       if (err) console.log(err);
       else res.send([true]);
     });
@@ -202,16 +211,16 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
 
 //#region Candidate del request
 //=======================================================================================================================================================
-router.post("/delCandidate", authToken, async function(req, res) {
+router.post("/delCandidate", authToken, async function (req, res) {
   if (req.body.del_id != null) {
-    await Candidate.findOne({ _id: req.body.del_id }, function(err, obj) {
+    await Candidate.findOne({ _id: req.body.del_id }, function (err, obj) {
       if (err) console.log(err);
       else {
         if (fs.existsSync(obj.image)) fs.unlinkSync(obj.image);
         if (fs.existsSync(obj.symbol)) fs.unlinkSync(obj.symbol);
       }
     });
-    await Candidate.deleteOne({ _id: req.body.del_id }, function(err, result) {
+    await Candidate.deleteOne({ _id: req.body.del_id }, function (err, result) {
       if (err) console.log(err);
       else res.send([true]);
     });
@@ -226,9 +235,9 @@ router.post(
   "/updateCandidateImage",
   authToken,
   upload.single("image"),
-  async function(req, res) {
+  async function (req, res) {
     if (req.body.id != null) {
-      await Candidate.findOne({ _id: req.body.id }, function(err, obj) {
+      await Candidate.findOne({ _id: req.body.id }, function (err, obj) {
         if (err) console.log(err);
         else {
           if (fs.existsSync(obj.image)) fs.unlinkSync(obj.image);
@@ -237,7 +246,7 @@ router.post(
       await Candidate.updateOne(
         { _id: req.body.id },
         { $set: { image: req.file.path.replace("\\", "/") } },
-        function(err, obj) {
+        function (err, obj) {
           if (err) console.log(err);
           else res.send([true]);
         }
@@ -254,9 +263,9 @@ router.post(
   "/updatePartySymbol",
   authToken,
   upload.single("image"),
-  async function(req, res) {
+  async function (req, res) {
     if (req.body.id != null) {
-      await Candidate.findOne({ _id: req.body.id }, function(err, obj) {
+      await Candidate.findOne({ _id: req.body.id }, function (err, obj) {
         if (err) console.log(err);
         else {
           if (fs.existsSync(obj.symbol)) fs.unlinkSync(obj.symbol);
@@ -265,7 +274,7 @@ router.post(
       await Candidate.updateOne(
         { _id: req.body.id },
         { $set: { symbol: req.file.path.replace("\\", "/") } },
-        function(err, obj) {
+        function (err, obj) {
           if (err) console.log(err);
           else res.send([true]);
         }
@@ -282,9 +291,9 @@ router.post(
   "/updatePartySymbol",
   authToken,
   upload.single("image"),
-  async function(req, res) {
+  async function (req, res) {
     if (req.body.id != null) {
-      await Candidate.findOne({ _id: req.body.id }, function(err, obj) {
+      await Candidate.findOne({ _id: req.body.id }, function (err, obj) {
         if (err) console.log(err);
         else {
           if (fs.existsSync(obj.symbol)) fs.unlinkSync(obj.symbol);
@@ -293,7 +302,7 @@ router.post(
       await Candidate.updateOne(
         { _id: req.body.id },
         { $set: { symbol: req.file.path.replace("\\", "/") } },
-        function(err, obj) {
+        function (err, obj) {
           if (err) console.log(err);
           else res.send([true]);
         }
@@ -306,9 +315,9 @@ router.post(
 
 //#region Candidate details update request
 //=======================================================================================================================================================
-router.post("/candidateDetailUpdate", authToken, async function(req, res) {
+router.post("/candidateDetailUpdate", authToken, async function (req, res) {
   var update = JSON.parse(req.body.update);
-  await Candidate.update({ _id: update.id }, { $set: update }, function(
+  await Candidate.update({ _id: update.id }, { $set: update }, function (
     err,
     obj
   ) {
@@ -321,7 +330,7 @@ router.post("/candidateDetailUpdate", authToken, async function(req, res) {
 
 //#region voters admin page
 //=======================================================================================================================================================
-router.get("/vote", function(req, res) {
+router.get("/vote", function (req, res) {
   res.render("voting");
 });
 //=======================================================================================================================================================

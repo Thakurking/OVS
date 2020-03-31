@@ -1,10 +1,65 @@
 <%-include admin_common/header.ejs%>
-<a href="/candidate" class="nav-link">
-    <i class="far fa-circle nav-icon"></i>
-    <p>Add Candidate</p>
-</a>
-<a href="/candidate" class="nav-link">
-    <i class="far fa-circle nav-icon"></i>
-    <p>Add Voters</p>
-</a>
-<%-include admin_common/footer.ejs%>
+<div class="container">
+    <div class="row">
+        <div class="col-12 col-md-4 p-5 mt-4">
+            <form class="form">
+                <div class="form-group">
+                    <label for="header">Event header</label>
+                    <input type="text" id="header" class="form-control" placeholder="enter event name">
+                </div>
+                <div class="form-group">
+                    <label for="orgby">Organised by</label>
+                    <input type="text" id="orgby" class="form-control" placeholder="enter organiser name">
+                </div>
+                <div class="form-group">
+                    <label for="date">Event date</label>
+                    <input type="text" class="form-control" id="date" placeholder="select date for event">
+                </div>
+                <div class="form-group">
+                    <label for="time">Event time</label>
+                    <input type="time" class="form-control" id="time" placeholder="select time for event">
+                </div>
+                <div class="form-group">
+                    <label for="enddate">Event ending date</label>
+                    <input type="text" class="form-control" id="enddate" placeholder="select date for event">
+                </div>
+                <div class="form-group">
+                    <label for="endtime">Event ending time</label>
+                    <input type="time" class="form-control" id="endtime" placeholder="select time for event">
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-success" id="saveEvent">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <%-include admin_common/footer.ejs%>
+    <script>
+        $(document).ready(() => {
+            $.datepicker.setDefaults($.datepicker.regional['nl']);
+            $.datepicker.setDefaults({ dateFormat: 'yy-mm-dd' });
+            $("#date,#enddate").datepicker();
+            $("#saveEvent").click(function () {
+                var event = {
+                    id: "1",
+                    header: $("#header").val(),
+                    orgby: $("#orgby").val(),
+                    date: $("#date").val(),
+                    time: $("#time").val(),
+                    edate: $("#enddate").val(),
+                    etime: $("#endtime").val()
+                }
+                $.ajax({
+                    url: "createEvent",
+                    type: "POST",
+                    data: { event: JSON.stringify(event) },
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+        });
+    </script>

@@ -1,48 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
+<%-include user_common/header.ejs%>
+<style>
+    ::-webkit-scrollbar {
+        width: 0;
+    }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OVS</title>
+    .timer {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        width: 50px;
+        height: 50px;
+        background: #333;
+        border-radius: 50%;
+    }
 
-    <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="bootstrap/bootstrap.css">
-    <link rel="stylesheet" href="chartjs/Chart.min.css">
-    <style>
-        ::-webkit-scrollbar {
-            width: 0;
-        }
+    .time-cont {
+        position: fixed;
+        height: 30px;
+        bottom: 30px;
+        right: 55px;
+        padding: 0 20px 0 20px;
+        border-radius: 20px;
+        z-index: 9999;
+    }
 
-        .timer {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-            width: 50px;
-            height: 50px;
-            background: #333;
-            border-radius: 50%;
-        }
-
-        .time-cont {
-            position: fixed;
-            height: 30px;
-            bottom: 30px;
-            right: 55px;
-            padding: 0 20px 0 20px;
-            border-radius: 20px;
-            z-index: 9999;
-        }
-
-        .status {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: red;
-            display: inline-block;
-        }
-    </style>
+    .status {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: red;
+        display: inline-block;
+    }
+</style>
 </head>
 
 <body>
@@ -156,10 +146,7 @@
             </div>
         </div>
     </section>
-    <script src="jquery/jquery.min.js"></script>
-    <script src="bootstrap/bootstrap.min.js"></script>
-    <script src="moment/moment.min.js"></script>
-    <script src="chartjs/Chart.bundle.min.js"></script>
+    <%-include user_common/footer.ejs%>
     <script>
         window.onload = function (e) {
             $("#voting-guide").modal({
