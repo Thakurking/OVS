@@ -1,394 +1,353 @@
-<!DOCTYPE html>
-<html lang="en">
+<%-include user_common/header.ejs%>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OVS</title>
-
-    <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="bootstrap/bootstrap.css">
-    <link rel="stylesheet" href="chartjs/Chart.min.css">
-    <style>
-        ::-webkit-scrollbar {
-            width: 0;
-        }
-
-        body {
-            overflow-x: hidden;
-        }
-
-        .vote {
-            height: 100px;
-            width: 100px;
-            overflow: hidden;
-            border-radius: 50%;
-            color: white;
-        }
-
-        .banner {
-            min-height: 400px;
-            max-height: 500px;
-            background: url("img/1.jpg");
-            background-size: cover;
-            background-position: top;
-            width: 100%;
-        }
-
-        #time {
-            color: white;
-            text-shadow: 1px 1px 10px #333;
-        }
-
-        #time .h3 {
-            color: white;
-            font-size: 40px;
-            font-weight: 700;
-        }
-
-        .navbar-dark {
-            background: none;
-        }
-
-        .move-cont {
-            position: relative;
-            bottom: 0;
-            margin: 0 auto;
-        }
-
-        .move {
-            position: relative;
-            transition: 3s;
-            animation: updown 2s infinite;
-        }
-
-        @keyframes updown {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateY(0);
-            }
-
-            40% {
-                transform: translateY(-30px);
-            }
-
-            60% {
-                transform: translateY(-15px);
-            }
-        }
-
-        .symbolWrapper {
-            height: 100px;
-            width: 100px;
-            border-radius: 50%;
-            overflow: hidden;
-            /* border: .1rem solid #333; */
-            display: inline-block;
-        }
-
-        .p-img {
-            margin-top: 15px;
-            height: 120px !important;
-            width: 120px !important;
-            border-radius: 50% !important;
-            overflow: hidden !important;
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            display: inline-block !important;
-        }
-
-        .s-img {
-            height: 30px !important;
-            width: 30px !important;
-            border-radius: 50% !important;
-            overflow: hidden !important;
-            background-size: cover !important;
-            background-position: center !important;
-            background-repeat: no-repeat !important;
-            float: right;
-        }
-    </style>
-</head>
-
-
-<body>
-    <!-- Modal -->
-    <div class="modal fade p-5" id="voteAuth" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p class="text-center text-success msg"></p>
-                    <!-- otp send form -->
-                    <div class="form-group text-center stage1">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="uid" aria-describedby="helpId"
-                                placeholder="enter your Aadhar number" maxlength="12">
-                            <button class="btn btn-success otp-send">Send OTP</button>
-                        </div>
-                        <small id="helpId" class="form-text text-muted mb-1">!warning <i>Enter you Aadhar number
-                                number
-                                without any space </i></small>
-                    </div>
-                    <!-- otp check form -->
-                    <div class="form-group text-center stage2">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="uid" aria-describedby="helpId"
-                                placeholder="enter OTP here" maxlength="12">
-                            <button class="btn btn-success otp-check">verify</button>
-                        </div>
-                        <small id="helpId" class="form-text text-muted mb-1">!warning <i>any Wrong attempt will cancel
-                                your vote</i></small>
-                    </div>
-                </div>
-                <!-- <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save</button>
-                </div> -->
-            </div>
-        </div>
-    </div>
-    <section class="banner">
-        <nav class="navbar navbar-sticky navbar-expand-sm navbar-dark">
-            <div class="container">
-                <a class="navbar-brand" href="#"><strong>OVS</strong></a>
-                <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse"
-                    data-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+<!-- Modal -->
+<div class="modal fade" id="voteAuth" tabindex="-1" role="dialog" aria-labelledby="modelTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
                 </button>
-                <div class="collapse navbar-collapse" id="collapsibleNavId">
-                    <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About us</a>
-                        </li>
-                    </ul>
+            </div>
+            <div class="modal-body">
+                <p class="text-center text-success msg"></p>
+                <!-- otp send form -->
+                <div class="form-group text-center stage1">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="uid" aria-describedby="helpId"
+                            placeholder="enter your Aadhar number" maxlength="12">
+                        <button class="btn btn-success otp-send disbaled" disabled>Send OTP</button>
+                    </div>
+                    <small id="helpId" class="form-text text-muted mb-1">Note <i>Enter you Aadhar number
+                            number
+                            without any space </i></small>
+                </div>
+                <!-- otp check form -->
+                <div class="form-group text-center stage2">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="otp" aria-describedby="helpId"
+                            placeholder="enter OTP here" maxlength="12">
+                        <button class="btn btn-success otp-check disabled" disabled>verify</button>
+                    </div>
+                    <small id="helpId" class="form-text text-muted mb-1">!warning <i>any Wrong attempt will cancel
+                            your vote</i></small>
                 </div>
             </div>
-        </nav>
-        <!-- countdown-timer -->
-        <div class="container" id="time">
-            <div class="row">
-                <div class="col-12 text-center pb-3 mb-4">
-                    <!-- election header -->
-                    <h5 class="display-4">Student Union Representative Election</h5>
-                    <h3 class=""> Asansol Enegneering College</h5>
-                        <h4>begins in..</h4>
-                </div>
-                <div class=" col-3 col-md-3 text-center p-4"><span class="h3 days"></span><br><span>Days</span>
-                </div>
-                <div class="col-3 col-md-3 text-center p-4"><span class="h3 hours"></span><br><span>Hours</span></div>
-                <div class="col-3 col-md-3 text-center p-4"><span class="h3 minutes"></span><br><span>minutes</span>
-                </div>
-                <div class="col-3 col-md-3 text-center p-4"><span class="h3 seconds"></span><br><span>seconds</span>
-                </div>
-                <div class="text-center move-cont">
-                    <a href="#candidate" class="text-white"><i class="fa fa-angle-down fa-2x move"
-                            aria-hidden="true"></i><br>swipe
-                        down</a>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- voting section -->
-    <div class="container">
-        <div class="row pt-5 pb-5">
-            <div class="col-xs-12 p-5 col-md-12 text-center">
-                <button class="btn text-success btn-light vote" data-toggle="modal" data-target="#voteAuth"
-                    data-backdrop="static" data-keyboard="false"><i class="fa fa-thumbs-up fa-3x"
-                        aria-hidden="true"></i></button><br>
-                <span class="h3 text-success"> Vote now</span>
-            </div>
+            <!-- <div class="modal-footer">
+             <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+             <button type="button" class="btn btn-primary">Save</button>
+         </div> -->
         </div>
     </div>
+</div>
 
-    <!-- candidates -->
-    <div class="container">
-        <div class="row" id="candidate">
-            <div class="col-12 text-center display-4 p-3">
-                Candidates
-            </div>
-            <% if(cad){%>
-            <% for(i=0;i<cad.length;i++){ %>
-            <div class="col-12 col-md-6 img-thumbnail">
-                <div class="row">
-                    <div class="col-3 p-2">
-                        <!-- candidate profile image -->
-                        <div class="p-img" style="background: url('<%=cad[i].image%>');"></div>
-                    </div>
-                    <!-- about candidate -->
-                    <div class="candidate col-9">
-                        <!-- candidate name -->
-                        <strong><%=cad[i].name%></strong>
-                        <!-- candidate party symbol -->
-                        <div class="s-img" style="background:url('<%=cad[i].symbol%>')"></div>
-                        <small class="float-right text-muted mr-2 mt-2"><%=cad[i].party%></small>
-                        <hr>
-                        <!-- about -->
-                        <p class="small p-3"><%=cad[i].about%></p>
-                    </div>
-                </div>
-            </div>
-            <% } }%>
-        </div>
-    </div>
-    <!-- charts -->
-    <div class="container mt-5">
+<section class="main_content  mt-5 mb-5" id="sectionTM">
+    <!-- countdown-timer -->
+    <div class="container text-white" id="time">
         <div class="row">
-            <div class="col-12 display-4 text-center">Results
-                <hr>
+            <div class="col-12 text-center mt-5 pt-5">
+                <!-- election header -->
+                <h1 class="election_header"><%=event[0].header %> </h1>
+                <p class="orgby"> <%=event[0].orgby %></p>
+                <p class="time-caption">
+                    <sapn class="h5">voting begins in..</sapn>
+                </p>
             </div>
-            <div class="col-md-6 p-3">
-                <canvas id="pieChart"></canvas>
+
+            <div class="col-3 col-md-3 text-center p-4 tm"><span class="h3 days"></span><br><span>Days</span></div>
+            <div class="col-3 col-md-3 text-center p-4 tm"><span class="h3 hours"></span><br><span>Hours</span></div>
+            <div class="col-3 col-md-3 text-center p-4 tm"><span class="h3 minutes"></span><br><span>minutes</span>
             </div>
-            <div class="col-md-6 p-3">
-                <canvas id="donutChart"></canvas>
+            <div class="col-3 col-md-3 text-center p-4 tm"><span class="h3 seconds"></span><br><span>seconds</span>
+            </div>
+
+            <div class="col-12 text-center move-cont mb-3">
+                <a class="text-white" data-toggle="modal" data-target="#voteAuth" data-backdrop="static"
+                    data-keyboard="false"><i class="fa fa-thumbs-up fa-3x move" aria-hidden="true"></i><br>vote
+                    now</a>
             </div>
         </div>
     </div>
-    <!-- footer -->
-    <section class="footer bg-dark">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center text-white">
-                    <span class="">&copy; V.O.S</i></span>
+</section>
+
+<!-- candidates -->
+<div class="container  mt-5 mb-5" id="sectionCD">
+    <div class="row" id="time">
+        <div class="col-12 p-4 text-center display-4">
+            Candidates
+        </div>
+        <% if(cad){ %>
+        <% for(i=0;i<cad.length;i++){ %>
+        <!-- Button trigger modal -->
+        <div class="col-6 col-md-4 text-center mb-3">
+            <a data-toggle="modal" data-target="#<%=cad[i]._id%>">
+                <img src="<%=cad[i].image%>" class="img-thumbnail img-fluid rounded-circle"
+                    style="width:100px;height:100px;">
+            </a>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade p-5" id="<%=cad[i]._id%>" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+            aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><%=cad[i].name%></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <h5>
+                            from <%=cad[i].party%> <img src="<%=cad[i].symbol%>" class="float-right" style="width:30px;"
+                                data-toggle="tooltip" title="<%=cad[i].party%>">
+                        </h5>
+                        <p><%=cad[i].about%></p>
+                    </div>
                 </div>
             </div>
+
         </div>
-    </section>
-    <script src="jquery/jquery.min.js"></script>
-    <script src="bootstrap/bootstrap.min.js"></script>
-    <script src="moment/moment.min.js"></script>
-    <script src="chartjs/Chart.bundle.min.js"></script>
-    <script>
-        window.onload = function (e) {
 
-            var $clock = $('#time'),
-                eventTime = moment('26-11-2020 08:30:00', 'DD-MM-YYYY HH:mm:ss').unix(),
-                currentTime = moment().unix(),
-                diffTime = eventTime - currentTime,
-                duration = moment.duration(diffTime * 1000, 'milliseconds'),
-                interval = 1000;
+        <% }%>
+        <% } %>
+    </div>
+</div>
+<!-- charts -->
+<div class="container mt-5 mb-5" id="sectionRS">
+    <div class="row">
+        <div class="col-12 display-4 text-center">Results
+            <hr>
+        </div>
+        <div class="col-md-6 p-3">
+            <canvas id="pieChart"></canvas>
+        </div>
+        <div class="col-md-6 p-3">
+            <canvas id="donutChart"></canvas>
+        </div>
+    </div>
+</div>
 
-            // if time to countdown
-            if (diffTime > 0) {
+<%-include user_common/footer.ejs%>
+<script>
+    function votingStartIn() {
+        //#region get elements and time from database
+        var tt = moment("<%=event[0].date%>").format("DD - MM - YYYY");
 
-                // Show clock
-                $clock.show();
+        var votebtn = $('.move-cont'),
+            clock = $("#time"),
+            eventTime = moment(tt + ' 11:08:00', 'DD-MM-YYYY HH:mm:ss').unix(),
+            currentTime = moment().unix(),
+            diffTime = eventTime - currentTime,
+            duration = moment.duration(diffTime * 1000, 'milliseconds'),
+            interval = 1000;
+        //#endregion
 
-                var $d = $('.days');
-                $h = $('.hours');
-                $m = $('.minutes');
-                $s = $('.seconds');
+        votebtn.hide();
 
-                setInterval(function () {
+        // if time to countdown
+        if (diffTime > 0) {
+            //#region get time container and hide vote btn
+            var $d = $('.days');
+            $h = $('.hours');
+            $m = $('.minutes');
+            $s = $('.seconds');
+            //#endregion
 
-                    duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
-                    var d = moment.duration(duration).days(),
-                        h = moment.duration(duration).hours(),
-                        m = moment.duration(duration).minutes(),
-                        s = moment.duration(duration).seconds();
+            var tv = setInterval(function () {
 
-                    d = $.trim(d).length === 1 ? '0' + d : d;
-                    h = $.trim(h).length === 1 ? '0' + h : h;
-                    m = $.trim(m).length === 1 ? '0' + m : m;
-                    s = $.trim(s).length === 1 ? '0' + s : s;
+                duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
+                var d = moment.duration(duration).days(),
+                    h = moment.duration(duration).hours(),
+                    m = moment.duration(duration).minutes(),
+                    s = moment.duration(duration).seconds();
 
-                    // show how many hours, minutes and seconds are left
-                    $d.text(d);
-                    $h.text(h);
-                    $m.text(m);
-                    $s.text(s);
+                d = $.trim(d).length === 1 ? '0' + d : d;
+                h = $.trim(h).length === 1 ? '0' + h : h;
+                m = $.trim(m).length === 1 ? '0' + m : m;
+                s = $.trim(s).length === 1 ? '0' + s : s;
 
-                }, interval);
+                // show how many hours, minutes and seconds are left
+                $d.text(d);
+                $h.text(h);
+                $m.text(m);
+                $s.text(s);
 
-            }
-            $(".banner").css("min-height", window.innerHeight);
-            $(".banner").css("min-width", window.innerwidth);
-        };
-        $(window).resize(() => {
-            $(".banner").css("min-height", window.innerHeight);
-            $(".banner").css("min-width", window.innerwidth);
+                if (d == '00' && h == '00' && m == "00" && s == "00") {
+                    clearInterval(tv);
+                    votingEndIn();
+                    votebtn.show();
+                    $(".time-caption").html("<span class='h5'>voting ends in</span>");
+                }
+            }, interval);
+
+        }
+        else {
+            $(".time-caption").html("<span class='h5'>voting ends in</span>");
+            votebtn.show();
+            votingEndIn();
+        }
+    }
+
+    function votingEndIn() {
+        //#region get elements and time from database
+        var tt = moment("<%=event[0].edate %>").format("DD-MM-YYYY");
+
+        var votebtn = $('.move-cont'),
+            clock = $("#time"),
+            eventTime = moment(tt + ' 22:30:00', 'DD-MM-YYYY HH:mm:ss').unix(),
+            currentTime = moment().unix(),
+            diffTime = eventTime - currentTime,
+            duration = moment.duration(diffTime * 1000, 'milliseconds'),
+            interval = 1000;
+        //#endregion
+
+
+
+        // if time to countdown
+        if (diffTime > 0) {
+            //#region get time container and hide vote btn
+            var $d = $('.days');
+            $h = $('.hours');
+            $m = $('.minutes');
+            $s = $('.seconds');
+            //#endregion
+
+            var tv = setInterval(function () {
+
+                duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
+                var d = moment.duration(duration).days(),
+                    h = moment.duration(duration).hours(),
+                    m = moment.duration(duration).minutes(),
+                    s = moment.duration(duration).seconds();
+
+                d = $.trim(d).length === 1 ? '0' + d : d;
+                h = $.trim(h).length === 1 ? '0' + h : h;
+                m = $.trim(m).length === 1 ? '0' + m : m;
+                s = $.trim(s).length === 1 ? '0' + s : s;
+
+                // show how many hours, minutes and seconds are left
+                $d.text(d);
+                $h.text(h);
+                $m.text(m);
+                $s.text(s);
+
+                if (d == '00' && h == '00' && m == "00" && s == "00") {
+                    clearInterval(tv);
+                    $(".tm").hide();
+                    $(".time-caption").html("<span class='h5'>voting ended</span>");
+                    votebtn.hide();
+                }
+            }, interval);
+
+        }
+        else {
+            $(".time-caption").html("<span class='h5'>voting ended</span>");
+            $(".tm").hide();
+            votebtn.hide();
+        }
+    }
+
+    window.onload = function (e) {
+
+        if (event) {
+            votingStartIn();
+        }
+
+        $(".main_content").css("min-height", window.innerHeight);
+        $(".main_content").css("min-width", window.innerwidth);
+    };
+
+    $(document).ready(function () {
+        $("#sectionCD,#sectionRS").hide();
+
+        $("#home").click(function () {
+            $("#sectionTM").show();
+            $("#sectionCD,#sectionRS").hide("d-none");
         });
-    </script>
-    <script>
-        $(document).ready(function () {
-            //- DONUT CHART -
-            //-------------
-            // Get context with jQuery - using jQuery's .get() method.
-            var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
-            var donutData = {
-                labels: [
-                    'BJP',
-                    'Trinmool',
-                    'Congress',
-                    'AAP',
-                ],
-                datasets: [
-                    {
-                        data: [700, 500, 400, 300],
-                        backgroundColor: ['#f39c12', '#00a65a', '#f56954', '#d2d6de'],
-                    }
-                ]
-            }
-            var donutOptions = {
-                maintainAspectRatio: true,
-                responsive: true,
-            }
-            //Create pie or douhnut chart
-            // You can switch between pie and douhnut using the method below.
-            var donutChart = new Chart(donutChartCanvas, {
-                type: 'doughnut',
-                data: donutData,
-                options: donutOptions
-            })
-
-            //-------------
-            //- PIE CHART -
-            //-------------
-            // Get context with jQuery - using jQuery's .get() method.
-            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-            var pieData = donutData;
-            var pieOptions = {
-                maintainAspectRatio: true,
-                responsive: true,
-            }
-            //Create pie or douhnut chart
-            // You can switch between pie and douhnut using the method below.
-            var pieChart = new Chart(pieChartCanvas, {
-                type: 'pie',
-                data: pieData,
-                options: pieOptions
-            })
-
+        $("#cad").click(function () {
+            $("#sectionTM,#sectionRS").hide();
+            $("#sectionCD").show();
         });
+        $("#res").click(function () {
+            $("#sectionTM,#sectionCD").hide();
+            $("#sectionRS").show();
+        });
+
+        $("[data-toggle='tooltip']").tooltip();
+        //- DONUT CHART -
+        //-------------
+        // Get context with jQuery - using jQuery's .get() method.
+        var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
+        var donutData = {
+            labels: [
+                'BJP',
+                'Trinmool',
+                'Congress',
+                'AAP',
+            ],
+            datasets: [
+                {
+                    data: [700, 500, 400, 300],
+                    backgroundColor: ['#f39c12', '#00a65a', '#f56954', '#d2d6de'],
+                }
+            ]
+        }
+        var donutOptions = {
+            maintainAspectRatio: true,
+            responsive: true,
+        }
+        //Create pie or douhnut chart
+        // You can switch between pie and douhnut using the method below.
+        var donutChart = new Chart(donutChartCanvas, {
+            type: 'doughnut',
+            data: donutData,
+            options: donutOptions
+        })
+
+        //-------------
+        //- PIE CHART -
+        //-------------
+        // Get context with jQuery - using jQuery's .get() method.
+        var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+        var pieData = donutData;
+        var pieOptions = {
+            maintainAspectRatio: true,
+            responsive: true,
+        }
+        //Create pie or douhnut chart
+        // You can switch between pie and douhnut using the method below.
+        var pieChart = new Chart(pieChartCanvas, {
+            type: 'pie',
+            data: pieData,
+            options: pieOptions
+        })
+
+
         $(".stage2").hide();
+        $("#uid").keyup(function () {
+            if ($(this).val().length == 12) $(".otp-send").prop("disabled", false).removeClass("disabled");
+            else $(".otp-send").prop("disabled", false).addClass("disabled");
+        });
         $(".otp-send").click(function () {
-            var spinner = " <i class='fa fa-spinner text-white' aria-hidden='true'></i>"
-            $(this).append(spinner).prop("disabled", true).closest(".form-group").hide();
+            var spinner = "<i class='fa fa-spinner text-white' aria-hidden='true'></i>"
+            $(this).html(spinner).prop("disabled", true).closest(".form-group").hide();
             $(".msg").text("A one time OTP has been send to your registered email");
             $(".stage2").show();
         });
+        $("#otp").keyup(function () {
+            if ($(this).val().length == 6) $(".otp-check").prop("disabled", false).removeClass("disabled");
+            else $(".otp-check").prop("disabled", false).addClass("disabled");
+        });
         $(".otp-check").click(function () {
             var spinner = " <i class='fa fa-spinner text-white' aria-hidden='true'></i>"
-            $(this).append(spinner).prop("disabled", true).closest(".form-group").hide();
-            $(this)
+            $(this).html(spinner).prop("disabled", true).closest(".form-group").hide();
             $(".msg").html("verified succesfully <br>redirecting to voting page....")
         });
-    </script>
-</body>
 
-</html>
+        $(window).resize(() => {
+            $(".main_content").css("min-height", window.innerHeight);
+            $(".main_content").css("min-width", window.innerwidth);
+        });
+
+    });
+</script>

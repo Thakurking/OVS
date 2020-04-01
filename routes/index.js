@@ -10,6 +10,7 @@ var multer = require("multer");
 const Admin = require("../model/Admin");
 const Candidate = require("../model/Candidate");
 const Voter = require("../model/Voter");
+const event = require("../model/event");
 /***********Nodemailer***********/
 const nodemailer = require("nodemailer");
 
@@ -47,11 +48,10 @@ var upload = multer({ storage: storage });
 
 //#region home or index Page
 //=======================================================================================================================================================
-router.get("/", function(req, res) {
-  Candidate.find({}, (err, result) => {
-    if (err) console.log(err);
-    else res.render("index", { cad: result });
-  });
+router.get("/", async function(req, res) {
+  let result = await Candidate.find({});
+  let result1 = await event.find({ id: "1" });
+  res.render("index", { cad: result, event: result1 });
 });
 //=======================================================================================================================================================
 //#endregion
@@ -149,6 +149,15 @@ router.get("/dashboard", authToken, function(req, res) {
     else if (obj == null) console.log("no user found");
     else {
       res.render("dashboard", { admin: obj });
+    }
+  });
+});
+
+router.post("/createEvent", authToken, function(req, res) {
+  event.create(JSON.parse(req.body.event), function(err, obj) {
+    if (err) console.log(err);
+    else {
+      res.send(obj);
     }
   });
 });

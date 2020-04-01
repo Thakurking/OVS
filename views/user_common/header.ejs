@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVS</title>
+
+    <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="bootstrap/bootstrap.css">
+    <link rel="stylesheet" href="chartjs/Chart.min.css">
+    <style>
+        ::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .main_content {
+            background: linear-gradient(90deg, #aa076b, #61045f);
+            background-attachment: fixed;
+        }
+
+        .bg-custom-1 {
+            background: linear-gradient(90deg, #aa076b, #61045f) !important;
+        }
+
+        /* .banner { */
+        /* background: url("img/1.jpg"); */
+        /* background: linear-gradient(#cc2b5e, #753a88); */
+        /* background: linear-gradient(45deg, #de6262, #ffb88c); */
+        /* background: linear-gradient(45deg, #eb3349, #f45c43); */
+        /* background: linear-gradient(90deg, #7b4397, #dc2430); */
+        /* background: linear-gradient(45deg, #4568dc, #b06ab3); */
+        /* background: linear-gradient(90deg, #c33764, #1d2671); */
+        /* background: linear-gradient(90deg, #aa076b, #61045f);
+
+            background-size: cover;
+            background-position: center;
+            width: 100%;
+        } */
+
+        .election_header {
+            font-size: calc(5vh + 5vw);
+        }
+
+
+        .media {
+            min-height: 150px;
+        }
+
+        #time .h3 {
+            font-size: calc(4vh + 4vw);
+        }
+
+        .move-cont {
+            position: relative;
+            bottom: 0;
+            margin: 0 auto;
+        }
+
+        .move {
+            position: relative;
+            transition: 3s;
+            animation: updown 2s infinite;
+        }
+
+        @keyframes updown {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-30px);
+            }
+
+            60% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .symbolWrapper {
+            height: 100px;
+            width: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            /* border: .1rem solid #333; */
+            display: inline-block;
+        }
+    </style>
+</head>
+
+
+<body>
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-custom-1">
+        <div class="container">
+            <a class="navbar-brand" href="/"><strong>OVS</strong></a>
+            <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse"
+                data-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavId">
+                <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="#">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About us</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
