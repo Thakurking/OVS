@@ -131,17 +131,18 @@ router.get("/logout", function(req, res) {
 //#endregion
 
 //#region Admin Dashboard Page
-//=======================================================================================================================================================
-router.get("/dashboard", authToken, function(req, res) {
-  Admin.findOne({ _id: req.profile }, function(err, obj) {
-    if (err) console.log(err);
-    else if (obj == null) console.log("no user found");
-    else {
-      res.render("dashboard", { admin: obj });
-    }
+router.get("/dashboard", authToken, async function(req, res) {
+  let adminProfile = await Admin.findOne({ _id: req.profile }, { Password: 0 });
+  let eve = await event.findOne({ id: "1" });
+  res.render("dashboard", {
+    profile: adminProfile,
+    event: eve,
+    time: eve.time.split(":"),
+    etime: eve.etime.split(":")
   });
 });
 
+//event creator
 router.post("/createEvent", authToken, function(req, res) {
   event.create(JSON.parse(req.body.event), function(err, obj) {
     if (err) console.log(err);
@@ -150,7 +151,21 @@ router.post("/createEvent", authToken, function(req, res) {
     }
   });
 });
-//=======================================================================================================================================================
+
+// update event
+router.post("/updateEvent", authToken, function(req, res) {
+  console.log(req.body.id, JSON.parse(req.body.event));
+  event.updateOne(
+    { _id: req.body.id },
+    { $set: JSON.parse(req.body.event) },
+    function(err, obj) {
+      if (err) console.log(err);
+      else {
+        res.send(obj);
+      }
+    }
+  );
+});
 //#endregion
 
 //#region Candidate admin Page

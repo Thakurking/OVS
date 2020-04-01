@@ -130,22 +130,18 @@
 <%-include user_common/footer.ejs%>
 <script>
     function votingStartIn() {
-        //#region get elements and time from database
-        // var tt = moment("<%=event[0].date%>").format("DD - MM - YYYY");
-        console.log("<%=event[0].date%> <%=event[0].time%>");
         var votebtn = $('.move-cont'),
-            clock = $("#time"),
             eventTime = moment("<%=event[0].date %> <%=event[0].time %>", 'DD-MM-YYYY HH:mm:ss').unix(),
             currentTime = moment().unix(),
             diffTime = eventTime - currentTime,
             duration = moment.duration(diffTime * 1000, 'milliseconds'),
             interval = 1000;
         //#endregion
-
         votebtn.hide();
 
         // if time to countdown
         if (diffTime > 0) {
+
             //#region get time container and hide vote btn
             var $d = $('.days');
             $h = $('.hours');
@@ -174,7 +170,7 @@
 
                 if (d == '00' && h == '00' && m == "00" && s == "00") {
                     clearInterval(tv);
-                    // votingEndIn();
+                    votingEndIn();
                     votebtn.show();
                     $(".time-caption").html("<span class='h5'>voting ends in..</span>");
                 }
@@ -184,68 +180,67 @@
         else {
             $(".time-caption").html("<span class='h5'>voting ends in..</span>");
             votebtn.show();
-            // votingEndIn();
+            votingEndIn();
         }
     }
 
-    // function votingEndIn() {
-    //     //#region get elements and time from database
-    //     // var tt = moment("").format("DD-MM-YYYY");
+    function votingEndIn() {
 
-    //     var votebtn = $('.move-cont'),
-    //         clock = $("#time"),
-    //         eventTime = moment("01-04-2020 05:00:00", 'DD-MM-YYYY HH:mm:ss').unix(),
-    //         currentTime = moment().unix(),
-    //         diffTime = eventTime - currentTime,
-    //         duration = moment.duration(diffTime * 1000, 'milliseconds'),
-    //         interval = 1000;
-    //     //#endregion
+        var votebtn = $('.move-cont'),
+            eventTime = moment("<%=event[0].edate%> <%=event[0].etime%>", 'DD-MM-YYYY HH:mm:ss').unix(),
+            currentTime = moment().unix(),
+            diffTime = eventTime - currentTime,
+            duration = moment.duration(diffTime * 1000, 'milliseconds'),
+            interval = 1000;
+        //#endregion
 
 
 
-    //     // if time to countdown
-    //     if (diffTime > 0) {
-    //         //#region get time container and hide vote btn
-    //         var $d = $('.days');
-    //         $h = $('.hours');
-    //         $m = $('.minutes');
-    //         $s = $('.seconds');
-    //         //#endregion
+        // if time to countdown
+        if (diffTime > 0) {
 
-    //         var tv = setInterval(function () {
+            //#region get time container and hide vote btn
+            var $d = $('.days');
+            $h = $('.hours');
+            $m = $('.minutes');
+            $s = $('.seconds');
+            //#endregion
 
-    //             duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
-    //             var d = moment.duration(duration).days(),
-    //                 h = moment.duration(duration).hours(),
-    //                 m = moment.duration(duration).minutes(),
-    //                 s = moment.duration(duration).seconds();
+            var tv = setInterval(function () {
 
-    //             d = $.trim(d).length === 1 ? '0' + d : d;
-    //             h = $.trim(h).length === 1 ? '0' + h : h;
-    //             m = $.trim(m).length === 1 ? '0' + m : m;
-    //             s = $.trim(s).length === 1 ? '0' + s : s;
+                duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
+                var d = moment.duration(duration).days(),
+                    h = moment.duration(duration).hours(),
+                    m = moment.duration(duration).minutes(),
+                    s = moment.duration(duration).seconds();
 
-    //             // show how many hours, minutes and seconds are left
-    //             $d.text(d);
-    //             $h.text(h);
-    //             $m.text(m);
-    //             $s.text(s);
+                d = $.trim(d).length === 1 ? '0' + d : d;
+                h = $.trim(h).length === 1 ? '0' + h : h;
+                m = $.trim(m).length === 1 ? '0' + m : m;
+                s = $.trim(s).length === 1 ? '0' + s : s;
 
-    //             if (d == '00' && h == '00' && m == "00" && s == "00") {
-    //                 clearInterval(tv);
-    //                 $(".tm").hide();
-    //                 $(".time-caption").html("<span class='h5'>voting ended</span>");
-    //                 votebtn.hide();
-    //             }
-    //         }, interval);
+                // show how many hours, minutes and seconds are left
+                $d.text(d);
+                $h.text(h);
+                $m.text(m);
+                $s.text(s);
 
-    //     }
-    //     else {
-    //         $(".time-caption").html("<span class='h5'>voting ended</span>");
-    //         $(".tm").hide();
-    //         votebtn.hide();
-    //     }
-    // }
+                if (d == '00' && h == '00' && m == "00" && s == "00") {
+                    console.log("voting starts in interval if statement--->");
+                    clearInterval(tv);
+                    $(".tm").hide();
+                    $(".time-caption").html("<span class='h5'>voting ended</span>");
+                    votebtn.hide();
+                }
+            }, interval);
+
+        }
+        else {
+            $(".time-caption").html("<span class='h5'>voting ended</span>");
+            $(".tm").hide();
+            votebtn.hide();
+        }
+    }
 
     window.onload = function (e) {
 
