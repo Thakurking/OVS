@@ -130,12 +130,12 @@
 <%-include user_common/footer.ejs%>
 <script>
     function votingStartIn() {
-        //#region get elements and time from database
-        var tt = moment("<%=event[0].date%>").format("DD - MM - YYYY");
-
+        // //#region get elements and time from database
+        console.log("<%=event[0].date%> <%=event[0].time%>");
+        console.log("<%=event[0].edate%> <%=event[0].etime%>");
         var votebtn = $('.move-cont'),
             clock = $("#time"),
-            eventTime = moment(tt + ' 22:25:00', 'DD-MM-YYYY HH:mm:ss').unix(),
+            eventTime = moment("<%=event[0].date%> <%=event[0].time%>", 'DD-MM-YYYY HH:mm:ss').unix(),
             currentTime = moment().unix(),
             diffTime = eventTime - currentTime,
             duration = moment.duration(diffTime * 1000, 'milliseconds'),
@@ -190,11 +190,11 @@
 
     function votingEndIn() {
         //#region get elements and time from database
-        var tt = moment("<%=event[0].edate %>").format("DD-MM-YYYY");
+        // var tt = moment("").format("DD-MM-YYYY");
 
         var votebtn = $('.move-cont'),
             clock = $("#time"),
-            eventTime = moment(tt + ' 22:26:00', 'DD-MM-YYYY HH:mm:ss').unix(),
+            eventTime = moment("<%=event[0].edate%> <%=event[0].etime%>", 'DD-MM-YYYY HH:mm:ss').unix(),
             currentTime = moment().unix(),
             diffTime = eventTime - currentTime,
             duration = moment.duration(diffTime * 1000, 'milliseconds'),
