@@ -1,53 +1,97 @@
 <%-include admin_common/header.ejs%>
 <div class="container">
     <div class="row">
-        <div class="col-12 col-md-4 p-5 mt-4">
-            <form class="form">
-                <div class="form-group">
+        <div class="col-12 col-md-12 mt-4 text-center">
+            <form class="form border p-4 row" id="eventForm">
+                <div class="form-group col-md-6">
                     <label for="header">Event header</label>
                     <input type="text" id="header" class="form-control" placeholder="enter event name">
                 </div>
-                <div class="form-group">
+                <div class="form-group col-md-6">
                     <label for="orgby">Organised by</label>
                     <input type="text" id="orgby" class="form-control" placeholder="enter organiser name">
                 </div>
-                <div class="form-group">
-                    <label for="date">Event date</label>
-                    <input type="text" class="form-control" id="date" placeholder="select date for event">
+                <div class="col d-md-none d-lg-none">
+                    <hr>
                 </div>
-                <div class="form-group">
-                    <label for="time">Event time</label>
-                    <input type="time" class="form-control" id="time" placeholder="select time for event">
+                <div class="form-group col-md-3">
+                    <label for="date">Starts on</label>
+                    <input type="text" readonly class="form-control" id="date" placeholder="select date for event"
+                        autocomplete="off">
                 </div>
-                <div class="form-group">
-                    <label for="enddate">Event ending date</label>
-                    <input type="text" class="form-control" id="enddate" placeholder="select date for event">
+                <div class="form-group col-4 col-md-1">
+                    <label for="hr">Hour</label>
+                    <input type="text" class="form-control" id="hr" placeholder="00" minlength="2" maxlength="2">
                 </div>
-                <div class="form-group">
-                    <label for="endtime">Event ending time</label>
-                    <input type="time" class="form-control" id="endtime" placeholder="select time for event">
+                <div class="form-group col-4 col-md-1">
+                    <label for="min">minute</label>
+                    <input type="text" class="form-control" id="min" placeholder="00" minlength="2" maxlength="2">
                 </div>
-                <div class="form-group">
-                    <button class="btn btn-success" id="saveEvent">Save</button>
+                <div class="form-group col-4 col-md-1">
+                    <label for="sec">seconds</label>
+                    <input type="text" class="form-control" id="sec" placeholder="00" minlength="2" maxlength="2">
+                </div>
+                <div class="col d-md-none d-lg-none">
+                    <hr>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="enddate">ends on</label>
+                    <input type="text" readonly class="form-control" id="enddate" placeholder="select date for event">
+                </div>
+                <div class="form-group col-4 col-md-1">
+                    <label for="ehr">Hour</label>
+                    <input type="text" class="form-control" id="ehr" placeholder="00" minlength="2" maxlength="2">
+                </div>
+                <div class="form-group col-4 col-md-1">
+                    <label for="emin">minute</label>
+                    <input type="text" class="form-control" id="emin" placeholder="00" minlength="2" maxlength="2">
+                </div>
+                <div class="form-group col-4 col-md-1">
+                    <label for="esec">seconds</label>
+                    <input type="text" class="form-control" id="esec" placeholder="00" minlength="2" maxlength="2">
+                </div>
+
+                <div class="col-12 small mb-1 text-center text-muted">time should be in 24 hour format</div>
+                <div class="form-group col-12">
+                    <button class="btn btn-success btn-block disabled" id="saveEvent" disabled>Save</button>
                 </div>
             </form>
         </div>
+
     </div>
     <%-include admin_common/footer.ejs%>
     <script>
         $(document).ready(() => {
             $.datepicker.setDefaults($.datepicker.regional['nl']);
-            $.datepicker.setDefaults({ dateFormat: 'yy-mm-dd' });
+            $.datepicker.setDefaults({ dateFormat: 'dd-mm-yy' });
             $("#date,#enddate").datepicker();
+            $("#eventForm :input").keyup(function () {
+                if ($("#header").val() != "" &&
+                    $("#orgby").val() != "" &&
+                    $("#date").val() != "" &&
+                    $("#enddate").val() != "" &&
+                    $("#hr").val().length >= 2 &&
+                    $("#min").val().length >= 2 &&
+                    $("#sec").val().length >= 2 &&
+                    $("#ehr").val().length >= 2 &&
+                    $("#emin").val().length >= 2 &&
+                    $("#esec").val().length >= 2) {
+                    $("#saveEvent").prop("disabled", false).removeClass("disabled");
+                }
+                else {
+                    $("#saveEvent").prop("disabled", true).addClass("disabled");
+                }
+            });
+
             $("#saveEvent").click(function () {
                 var event = {
                     id: "1",
                     header: $("#header").val(),
                     orgby: $("#orgby").val(),
                     date: $("#date").val(),
-                    time: $("#time").val(),
+                    time: $("#hr").val() + ":" + $("#min").val() + ":" + $("#sec").val(),
                     edate: $("#enddate").val(),
-                    etime: $("#endtime").val()
+                    etime: $("#ehr").val() + ":" + $("#emin").val() + ":" + $("#esec").val()
                 }
                 $.ajax({
                     url: "createEvent",

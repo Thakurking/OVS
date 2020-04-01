@@ -1,3 +1,4 @@
+/***********START MODULES***********/
 var express = require("express");
 var router = express.Router();
 /**********Password Hashing And Validator Module**********/
@@ -6,14 +7,18 @@ const jwt = require("jsonwebtoken");
 var validator = require("validator");
 const fs = require("fs");
 var multer = require("multer");
-/***********Model Modules***********/
+/***********DATABASE Model Modules***********/
 const Admin = require("../model/Admin");
 const Candidate = require("../model/Candidate");
 const Voter = require("../model/Voter");
 const event = require("../model/event");
 /***********Nodemailer***********/
 const nodemailer = require("nodemailer");
+/***********CSV To JSON***********/
+// const csv = require("csvtojson");
+/********************END OF MODULES********************/
 
+//#region Multer Path And destination settiings for image upload functions
 var storage = multer.diskStorage({
   destination: function(req, file, callback) {
     if (
@@ -45,78 +50,24 @@ var storage = multer.diskStorage({
   }
 });
 var upload = multer({ storage: storage });
+//#endregion
 
-//#region home or index Page
-//=======================================================================================================================================================
+//#region user view
+// home
 router.get("/", async function(req, res) {
   let result = await Candidate.find({});
   let result1 = await event.find({ id: "1" });
   res.render("index", { cad: result, event: result1 });
 });
-//=======================================================================================================================================================
-//#endregion
 
-//#region admin login Page
-//=======================================================================================================================================================
-router.get("/admin", function(req, res, next) {
-  // ADMIN ID : ritesh@gmail.com
-  // PASS : 12345
-  // important ----- uncomment and reload the index page once for setting up database
-  // Admin.create({ Email: "ritesh@gmail.com", Password: "$2b$08$ZDYPv1F6hssSf6QaNhQPb./6PFuv4FyHuEj4fBYipSAixfcNOPFwi" }, function(
-  //   err,
-  //   obj
-  // ) {
-  //   if (err) {
-  //     console.log(err);
-  //   } else {
-  //     console.log("success");
-  //   }
-  // });
-  const token = req.cookies.token;
-  if (!token) res.render("login");
-  else {
-    jwt.verify(token, "blkhrt", function(err, decoded) {
-      if (err) res.render("login");
-      else {
-        res.redirect("/dashboard");
-      }
-    });
-  }
+// voting page
+router.get("/vote", function(req, res) {
+  res.render("voting");
 });
 //#endregion
 
-// #region login request handel
-//=======================================================================================================================================================
-router.post("/loginAuth", function(req, res) {
-  var Admin_Login = JSON.parse(req.body.admin_login);
-  Admin.findOne({ Email: Admin_Login.Email }, function(err, obj) {
-    if (err) {
-      console.log(err);
-    } else if (obj == null) {
-      res.send([false, "no user found"]);
-    } else {
-      bcrypt.compare(Admin_Login.Password, obj.Password, function(err, result) {
-        if (err) {
-          console.log(err);
-        } else if (result == false) {
-          res.send([false, "password did not match"]);
-        } else {
-          var token = jwt.sign({ data: obj._id }, "blkhrt", {
-            expiresIn: "1h"
-          });
-          res
-            .cookie("token", token, { maxAge: 3600000, httpOnly: true })
-            .send([true]);
-        }
-      });
-    }
-  });
-});
-//=======================================================================================================================================================
-//#endregion
+//#region authinication middleware
 
-//#region auth TOKEN Middleware
-//=======================================================================================================================================================
 function authToken(req, res, next) {
   const token = req.cookies.token;
   if (!token) res.redirect("/admin");
@@ -130,15 +81,53 @@ function authToken(req, res, next) {
     });
   }
 }
-//=======================================================================================================================================================
 //#endregion
 
-//#region Logout Handling
-//=======================================================================================================================================================
-router.get("/logout", function(req, res) {
-  res.clearCookie("token").redirect("/");
+//#region admin login
+
+// login page
+router.get("/admin", function(req, res) {
+  const token = req.cookies.token;
+  if (token) {
+    jwt.verify(token, "blkhrt", function(err, decoded) {
+      if (err) {
+      } else res.redirect("/dashboard");
+    });
+  }
+  res.render("login");
 });
-//=======================================================================================================================================================
+
+//login request handle
+router.post("/loginAuth", function(req, res) {
+  var Admin_Login = JSON.parse(req.body.admin_login);
+  Admin.findOne({ Email: Admin_Login.Email }, function(err, obj) {
+    if (err) {
+      console.log(err);
+    } else if (obj == null) {
+      res.send([false, "no user found"]);
+    } else {
+      bcrypt.compare(Admin_Login.Password, obj.Password, function(err, result) {
+        if (err) {
+          console.log(err);
+        } else if (result == false) {
+          res.send([false, "password didn't not match"]);
+        } else {
+          var token = jwt.sign({ data: obj._id }, "blkhrt", {
+            expiresIn: "1h"
+          });
+          res
+            .cookie("token", token, { maxAge: 3600000, httpOnly: true })
+            .send([true]);
+        }
+      });
+    }
+  });
+});
+
+//logout
+router.get("/logout", function(req, res) {
+  res.clearCookie("token").redirect("/admin");
+});
 //#endregion
 
 //#region Admin Dashboard Page
@@ -165,18 +154,16 @@ router.post("/createEvent", authToken, function(req, res) {
 //#endregion
 
 //#region Candidate admin Page
-//=======================================================================================================================================================
+
+// candidate record display
 router.get("/candidate", authToken, async function(req, res) {
   await Candidate.find({}, (err, result) => {
     if (err) console.log(err);
     else res.render("candidate", { data: result });
   });
 });
-//=======================================================================================================================================================
-//#endregion
 
-//#region Candidate add request
-//=======================================================================================================================================================
+//Candidate add request
 router.post("/addCandidate", authToken, upload.array("image", 2), function(
   req,
   res
@@ -207,11 +194,8 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
     });
   } else res.send([false, "feilds cannot be empty"]);
 });
-//=======================================================================================================================================================
-//#endregion
 
-//#region Candidate del request
-//=======================================================================================================================================================
+//Candidate delete request
 router.post("/delCandidate", authToken, async function(req, res) {
   if (req.body.del_id != null) {
     await Candidate.findOne({ _id: req.body.del_id }, function(err, obj) {
@@ -227,11 +211,8 @@ router.post("/delCandidate", authToken, async function(req, res) {
     });
   } else res.send([false, "record does not exist"]);
 });
-//=======================================================================================================================================================
-//#endregion
 
-//#region Candidate image update request
-//=======================================================================================================================================================
+//Candidate profile image update request
 router.post(
   "/updateCandidateImage",
   authToken,
@@ -255,11 +236,8 @@ router.post(
     } else res.send([false, "record does not exist"]);
   }
 );
-//=======================================================================================================================================================
-//#endregion
 
-//#region Candidate party symbol update request
-//=======================================================================================================================================================
+//Candidate party symbol update request
 router.post(
   "/updatePartySymbol",
   authToken,
@@ -283,11 +261,8 @@ router.post(
     } else res.send([false, "record does not exist"]);
   }
 );
-//=======================================================================================================================================================
-//#endregion
 
-//#region Candidate details update request
-//=======================================================================================================================================================
+//Candidate details update request
 router.post(
   "/updatePartySymbol",
   authToken,
@@ -311,11 +286,8 @@ router.post(
     } else res.send([false, "record does not exist"]);
   }
 );
-//=======================================================================================================================================================
-//#endregion
 
-//#region Candidate details update request
-//=======================================================================================================================================================
+//Candidate details update request
 router.post("/candidateDetailUpdate", authToken, async function(req, res) {
   var update = JSON.parse(req.body.update);
   await Candidate.update({ _id: update.id }, { $set: update }, function(
@@ -326,24 +298,20 @@ router.post("/candidateDetailUpdate", authToken, async function(req, res) {
     else res.send([true]);
   });
 });
-//=======================================================================================================================================================
+
 //#endregion
 
-//Voter Adding Starter Page
-//START
-//=======================================================================================================================================================
+//#region Voters admin Page
+
+//Voters Arecord display
 router.get("/voter", authToken, function(req, res) {
   Voter.find({}, (err, result) => {
     if (err) console.log(err);
     else res.render("voter", { data: result });
   });
 });
-//=======================================================================================================================================================
-//END
 
 //Voter Add Request
-//START
-//=======================================================================================================================================================
 router.post("/voterCreate", authToken, function(req, res) {
   var voter = JSON.parse(req.body.voter);
   if (
@@ -356,14 +324,10 @@ router.post("/voterCreate", authToken, function(req, res) {
       if (err) console.log(err);
       else res.send([true]);
     });
-  } else res.send([false, "feilds cannot be empty"]);
+  } else res.send([false, "fileds cann tbe empty"]);
 });
-//=======================================================================================================================================================
-//END
 
 //Voter Delete Request
-//START
-//=======================================================================================================================================================
 router.post("/voterDel", function(req, res) {
   var d_id = req.body.del_id;
   Voter.deleteOne({ _id: d_id }, function(err, result) {
@@ -371,29 +335,16 @@ router.post("/voterDel", function(req, res) {
     else res.send(result);
   });
 });
-//=======================================================================================================================================================
-//END
 
 //Voter Update Request
-//START
-//=======================================================================================================================================================
-router.post("/voterUpdate", function(req, res) {
-  var voter = JSON.parse(req.body.voter);
+router.post("/voterupdate", function(req, res) {
+  var Voter_Data = JSON.parse(req.body.voter);
   var u_id = req.body.id;
-  Voter.update({ _id: u_id }, { $set: voter }, function(err, result) {
+  Voter.update({ _id: u_id }, { $set: Voter_Data }, function(err, result) {
     if (err) console.log(err);
     else res.send(result);
   });
 });
-//=======================================================================================================================================================
-//END
-
-//#region voters admin page
-//=======================================================================================================================================================
-router.get("/vote", function(req, res) {
-  res.render("voting");
-});
-//=======================================================================================================================================================
 //#endregion
 
 module.exports = router;
