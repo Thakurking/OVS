@@ -153,7 +153,7 @@ router.post("/new_admin_request", async (req, res) => {
       } else {
         admin.Status = "pending";
         admin.Role = "admin";
-        admin.Password = bcrypt.hashSync(admin.Password, "blkhrt");
+        admin.Password = bcrypt.hashSync(admin.Password, 8);
         await Admin.create(admin, (err, result) => {
           if (err) res.send([false, "something went Wrong"]);
           else
