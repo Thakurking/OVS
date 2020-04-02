@@ -25,12 +25,12 @@
           </div>
           <!-- phone number -->
           <div class="form-group">
-            <input type="text" class="form-control" id="phno" placeholder="Phone number">
+            <input type="text" class="form-control" id="phno" placeholder="Phone number" minlength="10" maxlength="12">
           </div>
           <!-- aadhar number -->
           <div class="form-group">
-            <input type="text" class="form-control" id="aadhar" placeholder="Aadhar number" maxlength="12"
-              minlength="12">
+            <input type="text" class="form-control" id="aadhar" placeholder="Aadhar number" minlength="12"
+              maxlength="12" minlength="12">
           </div>
 
         </div>
@@ -91,6 +91,10 @@
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#voterAddModal">
           Add new +
         </button>
+        <button type="button" class="btn btn-warning text-white csvfileSelect">
+          <i class="fa fa-file" aria-hidden="true"></i>
+        </button>
+        <input type="file" id="csvFile" accept=".csv">
       </div>
     </div>
     <div class="row mt-3">
@@ -136,13 +140,36 @@
 <%-include admin_common/footer.ejs%>
 <script>
   $(document).ready(function () {
+    $("#csvFile").hide();
+    $(".csvfileSelect").click(function () {
+      $("#csvFile").toggle();
+    });
+    $("#csvFile").change(function () {
+      var formData = new FormData();
+      formData.append("file", document.getElementById("csvFile").files[0]);
+      $.ajax({
+        url: "csvFileUpload",
+        type: "POST",
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (data) {
+          window.location.reload();
+        },
+        error: function (data) {
+          toastr.error(data);
+        }
+      });
+
+    });
 
     //FrontEnd Validation
     //START
     //=======================================================================================================================================================
     $(":input").keyup(function () {
-      if ($("#name").val() != "" && $("#email").val() != "" && $("#phno").val() != "" && $("#aadhar").val() != "") {
+      if ($("#name").val() != "" && $("#email").val() != "" && $("#phno").val().length >= 10 && $("#aadhar").val().length == 12) {
         $("#botn").prop("disabled", false).removeClass("disabled");
+        toastr.warning("fileds can't be empty");
       }
       else {
         $("#botn").prop("disabled", true).addClass("disabled");
@@ -167,11 +194,13 @@
         type: "POST",
         data: { voter: JSON.stringify(voter) },
         success: function (data) {
-          if (data[0] == false) $(".err-msg").append(data[1]);
+          if (data[0] == false) {
+            toastr.error(data[1]);
+          }
           else window.location.reload();
         },
         error: function (data) {
-          console.log(data);
+          toastr.error(data);
         }
       });
     });
@@ -201,6 +230,7 @@
           type: "POST",
           data: { voter: JSON.stringify(voter), id: id },
           success: function (data) {
+            toastr.success("Updated");
             window.location.reload();
           },
           error: function (data) {
@@ -224,9 +254,10 @@
         type: "POST",
         data: { del_id: btn_id },
         success: function (data) {
+          toastr.success("Deleted");
         },
-        error: function (err) {
-          console.log(err);
+        error: function (data) {
+          toastr.error(data)
         }
       });
     });

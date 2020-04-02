@@ -15,7 +15,7 @@ const event = require("../model/event");
 /***********Nodemailer***********/
 const nodemailer = require("nodemailer");
 /***********CSV To JSON***********/
-// const csv = require("csvtojson");
+const csv = require("csvtojson");
 /********************END OF MODULES********************/
 
 //#region Multer Path And destination settiings for image upload functions
@@ -83,7 +83,7 @@ function authToken(req, res, next) {
 }
 //#endregion
 
-//#region admin login
+//#region admin login / logout
 
 // login page
 router.get("/admin", function(req, res) {
@@ -100,34 +100,73 @@ router.get("/admin", function(req, res) {
 //login request handle
 router.post("/loginAuth", function(req, res) {
   var Admin_Login = JSON.parse(req.body.admin_login);
-  Admin.findOne({ Email: Admin_Login.Email }, function(err, obj) {
-    if (err) {
-      console.log(err);
-    } else if (obj == null) {
-      res.send([false, "no user found"]);
-    } else {
-      bcrypt.compare(Admin_Login.Password, obj.Password, function(err, result) {
-        if (err) {
-          console.log(err);
-        } else if (result == false) {
-          res.send([false, "password didn't not match"]);
-        } else {
-          var token = jwt.sign({ data: obj._id }, "blkhrt", {
-            expiresIn: "1h"
-          });
-          res
-            .cookie("token", token, { maxAge: 3600000, httpOnly: true })
-            .send([true]);
-        }
-      });
+  Admin.findOne(
+    {
+      Email: Admin_Login.Email,
+      Status: "active",
+      Role: { $in: ["admin", "superadmin"] }
+    },
+    (err, obj) => {
+      if (err) {
+        console.log(err);
+      } else if (obj == null) {
+        res.send([false, "no user found"]);
+      } else {
+        bcrypt.compare(Admin_Login.Password, obj.Password, function(
+          err,
+          result
+        ) {
+          if (err) {
+            console.log(err);
+          } else if (result == false) {
+            res.send([false, "password didn't not match"]);
+          } else {
+            var token = jwt.sign({ data: obj }, "blkhrt", {
+              expiresIn: "1h"
+            });
+            res
+              .cookie("token", token, { maxAge: 3600000, httpOnly: true })
+              .send([true]);
+          }
+        });
+      }
     }
-  });
+  );
 });
 
 //logout
 router.get("/logout", function(req, res) {
   res.clearCookie("token").redirect("/admin");
 });
+
+// new admin request
+router.post("/new_admin_request", async (req, res) => {
+  var admin = JSON.parse(req.body.new_admin);
+  await Admin.findOne({ Email: admin.Email }, async (err, obj) => {
+    if (err) res.send([false, "soemthing went wrong"]);
+    else if (obj != null) res.send([false, "email already exist"]);
+    else {
+      if (admin.Email != "" && validator.isEmail(admin.Email) == false) {
+        res.send([false, "invalid email"]);
+      } else if (admin.Password != "" && admin.Password.length < 6) {
+        res.send([false, "invalid password"]);
+      } else {
+        admin.Status = "pending";
+        admin.Role = "admin";
+        admin.Password = bcrypt.hashSync(admin.Password, "blkhrt");
+        await Admin.create(admin, (err, result) => {
+          if (err) res.send([false, "something went Wrong"]);
+          else
+            res.send([
+              true,
+              "successfully submitted, your will be notified once we approve your request"
+            ]);
+        });
+      }
+    }
+  });
+});
+
 //#endregion
 
 //#region Admin Dashboard Page
@@ -358,6 +397,104 @@ router.post("/voterupdate", function(req, res) {
   Voter.update({ _id: u_id }, { $set: Voter_Data }, function(err, result) {
     if (err) console.log(err);
     else res.send(result);
+  });
+});
+
+//csv data upload voters
+router.post("/csvFileUpload", authToken, upload.single("file"), function(
+  req,
+  res
+) {
+  var msgData = [];
+  csv()
+    .fromFile(req.file.path)
+    .then(async jsonObj => {
+      for (let i = 0; i < jsonObj.length; i++) {
+        await Voter.create(jsonObj[i], (err, obj) => {
+          msgData[i] = jsonObj[i];
+        });
+      }
+    });
+  console.log(msgData);
+  res.send(msgData);
+});
+//voter csv upload
+//#endregion
+
+//#region Voters admin Page
+
+//user-groups record display
+router.get("/user-groups", authToken, async (req, res) => {
+  console.log(req.profile.Status);
+  if (req.profile.Role == "superadmin") {
+    Admin.find({}, (err, result) => {
+      if (err) console.log(err);
+      else res.render("user-groups", { data: result });
+    });
+  } else {
+    res.redirect("/dashboard");
+  }
+});
+
+// user-groups Update Request
+router.post("/adminUpdate", (req, res) => {
+  var admin = JSON.parse(req.body.admin);
+  var id = req.body.id;
+  Admin.update({ _id: id }, { $set: admin }, (err, result) => {
+    if (err) console.log(err);
+    else res.send(result);
+  });
+});
+
+// status toggler
+router.post("/status_toggle", async (req, res) => {
+  var id = req.body.id;
+  await Admin.findOne({ _id: id }, (err, obj) => {
+    if (err) res.send([false, "something went wrong"]);
+    else if (obj == null) res.send([false, "user doesn't exist"]);
+    else {
+      if (obj.Status == "active") {
+        Admin.update(
+          { _id: id },
+          { $set: { Status: "deactive" } },
+          (err, result) => {
+            if (err) res.send([false, "something went wrong"]);
+            else res.send([true, "updated"]);
+          }
+        );
+      } else {
+        Admin.update(
+          { _id: id },
+          { $set: { Status: "active" } },
+          (err, result) => {
+            if (err) res.send([false, "something went wrong"]);
+            else res.send([true, "updated"]);
+          }
+        );
+      }
+    }
+  });
+});
+
+// admin request accept
+router.post("/admin_request_accept", async (req, res) => {
+  var id = req.body.id;
+  await Admin.updateOne(
+    { _id: id },
+    { $set: { Status: "active" } },
+    (err, result) => {
+      if (err) console.log(err);
+      else res.send([true]);
+    }
+  );
+});
+
+// admin request reject
+router.post("/admin_request_reject", async (req, res) => {
+  var id = req.body.id;
+  await Admin.deleteOne({ _id: id }, (err, result) => {
+    if (err) console.log(err);
+    else res.send([true]);
   });
 });
 //#endregion

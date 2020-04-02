@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="bootstrap/bootstrap.css">
     <link rel="stylesheet" href="jquery/jquery-ui.min.css">
+    <link rel="stylesheet" href="toastr/toastr.min.css">
     <link rel="stylesheet" href="stylesheets/admin.css">
     <title></title>
 </head>
@@ -23,6 +24,7 @@
             <div class="collapse navbar-collapse" id="collapsibleNavId">
                 <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                     <li class="nav-item active">
+                        <a class="nav-link" href="/user-groups"><i class="fa fa-users" aria-hidden="true"></i></a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/dashboard">Dahsboard</a>
@@ -33,15 +35,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/voter">voters</a>
                     </li>
-
-                    <!-- <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdownId" data-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="false">Dropdown</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdownId">
-                            <a class="dropdown-item" href="#">Action 1</a>
-                            <a class="dropdown-item" href="#">Action 2</a>
-                        </div>
-                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link text-danger" href="/logout"><i class="fas fa-sign-out-alt"
+                                aria-hidden="true"></i> log
+                            out</a>
+                    </li>
                 </ul>
             </div>
         </div>

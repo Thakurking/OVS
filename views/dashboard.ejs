@@ -2,6 +2,7 @@
 <div class="container">
     <div class="row">
         <% if(event && time){ %>
+        <div class="col-12 display-4 display text-center">Events</div>
         <div class="col-12 col-md-12 mt-4 text-center">
             <form class="form border border-md-only p-4 row" id="eventForm">
                 <div class="form-group col-md-6">
@@ -42,7 +43,7 @@
                 </div>
                 <div class="form-group col-md-3">
                     <label for="enddate">ends on</label>
-                    <input type="text" readonly class="form-control" value="<%=event.edate %>" id=" enddate"
+                    <input type="text" readonly class="form-control" value="<%=event.edate %>" id="enddate"
                         placeholder="select date for event">
                 </div>
                 <div class="form-group col-4 col-md-1">
@@ -75,7 +76,8 @@
         $(document).ready(() => {
             $.datepicker.setDefaults($.datepicker.regional['nl']);
             $.datepicker.setDefaults({ dateFormat: 'dd-mm-yy' });
-            $(" #date,#enddate").datepicker(); $("#eventForm :input").keyup(function () {
+            $("#date,#enddate").datepicker();
+            $("#eventForm :input,#date,#enddate").on("change keyup keydown", function () {
                 if ($("#header").val() != ""
                     && $("#orgby").val() != "" && $("#date").val() != "" && $("#enddate").val() != "" &&
                     $("#hr").val().length >= 2 &&
@@ -90,7 +92,7 @@
                     $("#saveEvent").prop("disabled", true).addClass("disabled");
                 }
             });
-
+            $("#date,#enddate").datepicker();
             $("#saveEvent").click(function () {
                 var id = $(this).val();
                 var event = {
