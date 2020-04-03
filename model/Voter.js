@@ -6,6 +6,8 @@ const VoterSchema = new Schema({
   name: String,
   phone: String,
   email: String,
-  aadhar: String
+  aadhar: String,
+  otp: String,
+  status: String
 });
 module.exports = mongoose.model("Voter", VoterSchema);

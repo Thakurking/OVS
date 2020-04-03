@@ -1,6 +1,7 @@
 /***********START MODULES***********/
 var express = require("express");
 var router = express.Router();
+const db = require("../config/db");
 /**********Password Hashing And Validator Module**********/
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -61,9 +62,55 @@ router.get("/", async function(req, res) {
 });
 
 // voting page
-router.get("/vote", function(req, res) {
-  res.render("voting");
+router.get("/vote", authVoter, function(req, res) {
+  Candidate.find({}, (err, result) => {
+    if (err) console.log(err);
+    else {
+      res.render("voting", { data: result });
+    }
+  });
 });
+//#endregion
+
+// giving vote to candidtaes
+router.post("/give_vote", authVoter, async (req, res) => {
+  var inc = 0;
+  await Candidate.findOne({ _id: req.body.id }, async (err, obj) => {
+    if (err) res.send([false, "party not found"]);
+    else {
+      console.log(obj.score);
+      if (obj.score) {
+        inc = obj.score + 1;
+      } else {
+        inc = inc + 1;
+      }
+      console.log(typeof inc, inc);
+      await Candidate.updateOne(
+        { _id: obj._id },
+        { $set: { score: inc } },
+        (err, result) => {
+          if (err) console.log(err);
+          else res.clearCookie("voter_token").send(true);
+        }
+      );
+    }
+  });
+});
+
+//#region voter authinaction middleware
+
+function authVoter(req, res, next) {
+  const token = req.cookies.voter_token;
+  if (!token) res.redirect("/");
+  else {
+    jwt.verify(token, "blkhrt", function(err, decoded) {
+      if (err) res.redirect("/");
+      else {
+        next();
+      }
+    });
+  }
+}
 //#endregion
 
 //#region authinication middleware
@@ -192,18 +239,17 @@ router.post("/createEvent", authToken, function(req, res) {
 });
 
 // update event
-router.post("/updateEvent", authToken, function(req, res) {
-  console.log(req.body.id, JSON.parse(req.body.event));
-  event.updateOne(
-    { _id: req.body.id },
-    { $set: JSON.parse(req.body.event) },
-    function(err, obj) {
-      if (err) console.log(err);
-      else {
-        res.send(obj);
-      }
+router.post("/updateEvent", authToken, async (req, res) => {
+  var event = JSON.parse(req.body.event);
+  await event.updateOne({ _id: req.body.id }, { $set: event }, function(
+    err,
+    obj
+  ) {
+    if (err) console.log(err);
+    else {
+      res.send(obj);
     }
-  );
+  });
 });
 //#endregion
 
@@ -357,7 +403,7 @@ router.post("/candidateDetailUpdate", authToken, async function(req, res) {
 
 //#region Voters admin Page
 
-//Voters Arecord display
+//Voters record display
 router.get("/voter", authToken, function(req, res) {
   Voter.find({}, (err, result) => {
     if (err) console.log(err);
@@ -421,11 +467,10 @@ router.post("/csvFileUpload", authToken, upload.single("file"), function(
 //voter csv upload
 //#endregion
 
-//#region Voters admin Page
+//#region user-groups admin Page
 
 //user-groups record display
 router.get("/user-groups", authToken, async (req, res) => {
-  console.log(req.profile.Status);
   if (req.profile.Role == "superadmin") {
     Admin.find({}, (err, result) => {
       if (err) console.log(err);
@@ -478,9 +523,13 @@ router.post("/status_toggle", async (req, res) => {
 
 // admin request accept
 router.post("/admin_request_accept", async (req, res) => {
-  var id = req.body.id;
+  mail(
+    req.body.email,
+    "OVs admin approval",
+    "your request has been approved, continue and login"
+  );
   await Admin.updateOne(
-    { _id: id },
+    { _id: req.body.id },
     { $set: { Status: "active" } },
     (err, result) => {
       if (err) console.log(err);
@@ -492,11 +541,111 @@ router.post("/admin_request_accept", async (req, res) => {
 // admin request reject
 router.post("/admin_request_reject", async (req, res) => {
   var id = req.body.id;
+  mail(req.body.email, "OVs admin approval", "your request has been rejected");
   await Admin.deleteOne({ _id: id }, (err, result) => {
     if (err) console.log(err);
     else res.send([true]);
   });
 });
+//#endregion
+
+// voters otp send
+router.post("/otp_send", async (req, res) => {
+  await Voter.findOne({ aadhar: req.body.uid }, (err, obj) => {
+    if (err) {
+      res.send([false, "something went wrong"]);
+    } else if (obj == null) {
+      res.send([false, "you are not eligible for voting"]);
+    } else if (obj.status == "y") {
+      res.send([false, "you have already voted once"]);
+    } else {
+      var otp1 = String(Math.floor(100000 + Math.random() * 900000));
+      Voter.updateOne(
+        { _id: obj._id },
+        { $set: { otp: otp1, status: "n" } },
+        (err, result) => {
+          if (err) console.log(err);
+          else {
+            msg = "your requested OTP is " + otp1;
+            if (mail(obj.email, "OVS request for otp", msg)) {
+              res.send([
+                true,
+                "A one time otp has been sent to your email",
+                obj._id
+              ]);
+            } else {
+              res.send([false, "couldn't send otp"]);
+            }
+          }
+        }
+      );
+    }
+  });
+});
+
+// voters otp check
+router.post("/otp_check", async (req, res) => {
+  await Voter.findOne({ _id: req.body.id }, async (err, obj) => {
+    if (err) {
+      res.send([false, "something went wrong"]);
+    } else if (obj == null) {
+      res.send([false, "you are not eligible for voting"]);
+    } else if (obj.status == "y") {
+      res.send([false, "you have already voted once"]);
+    } else if (obj.otp != req.body.otp) {
+      res.send([false, "invalid otp"]);
+    } else {
+      await Voter.updateOne(
+        { _id: obj._id },
+        { $set: { status: "y" } },
+        (err, result) => {
+          var voter_token = jwt.sign({ data: obj }, "blkhrt", {
+            expiresIn: 30000
+          });
+          res
+            .cookie("voter_token", voter_token, {
+              maxAge: 30000,
+              httpOnly: true
+            })
+            .send([true]);
+        }
+      );
+    }
+  });
+});
+
+//#region nodemailer
+// async..await is not allowed in global scope, must use a wrapper
+async function mail(email, subject, data) {
+  // create reusable transporter object using the default SMTP transport
+  let transporter = nodemailer.createTransport({
+    //host: "smtp.gmail.com",
+    //port: 465,
+    //secure: true, // true for 465, false for other ports
+    service: "gmail",
+    auth: {
+      user: db.user, // generated ethereal user
+      pass: db.pass // generated ethereal password
+    }
+  });
+
+  // send mail with defined transport object
+  let info = await transporter.sendMail(
+    {
+      from: "playersarenateam@gmail.com", // sender address
+      to: email, // list of receivers
+      subject: subject, // Subject line
+      //text: "your otp is " + otp, // plain text body
+      html: data // html body
+    },
+    function(error, result) {
+      if (error) return false;
+      else return true;
+    }
+  );
+}
+
+// mail().catch(console.error);
 //#endregion
 
 module.exports = router;

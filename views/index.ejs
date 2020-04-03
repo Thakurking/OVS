@@ -10,7 +10,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <p class="text-center text-success msg"></p>
+                <div class="text-center msg"></div>
                 <!-- otp send form -->
                 <div class="form-group text-center stage1">
                     <div class="input-group">
@@ -27,7 +27,7 @@
                     <div class="input-group">
                         <input type="text" class="form-control" id="otp" aria-describedby="helpId"
                             placeholder="enter OTP here" maxlength="12">
-                        <button class="btn btn-success otp-check disabled" disabled>verify</button>
+                        <button class="btn btn-success otp-check disabled" disabled value="">verify</button>
                     </div>
                     <small id="helpId" class="form-text text-muted mb-1">!warning <i>any Wrong attempt will cancel
                             your vote</i></small>
@@ -265,6 +265,7 @@
         });
 
         $("[data-toggle='tooltip']").tooltip();
+        //#region 
         //- DONUT CHART -
         //-------------
         // Get context with jQuery - using jQuery's .get() method.
@@ -313,39 +314,58 @@
             options: pieOptions
         })
 
-
+        //#endregion
         $(".stage2").hide();
         $("#uid").keyup(function () {
-            if ($(this).val().length == 12) $(".otp-send").prop("disabled", false).removeClass("disabled");
-            else $(".otp-send").prop("disabled", false).addClass("disabled");
+            if ($(this).val().length == 12) $(".otp-send").text("send OTP").prop("disabled", false).removeClass("disabled");
+            else $(".otp-send").prop("disabled", false).text("send OTP").addClass("disabled");
         });
-
         $(".otp-send").click(function () {
+            $(this).html("<i class='fa fa-spinner text-white' aria-hidden='true'></i>").prop("disabled", true);
             $.ajax({
-                url: "otp-send",
+                url: "otp_send",
                 type: "POST",
-                data: { event: JSON.stringify(event), id: id },
+                data: { uid: $("#uid").val() },
                 success: function (data) {
-                    window.location.reload();
+                    if (data[0] == true) {
+                        $(".msg").html("<span class='text-success'>" + data[1] + "</span>");
+                        $(".stage2,.stage1").toggle();
+                        $(".otp-check").val(data[2]);
+                    }
+                    else
+                        $(".msg").html("<span class='text-danger'>" + data[1] + "<a href='/'>Try again..</a></span>");
                 },
                 error: function (data) {
-                    console.log(data);
+                    $(".msg").html("<span class='text-danger'>something went wrong <a href='/'>Try again..</a></span>");
                 }
             });
-            var spinner = "<i class='fa fa-spinner text-white' aria-hidden='true'></i>"
-            $(this).html(spinner).prop("disabled", true).closest(".form-group").hide();
-            $(".msg").text("A one time OTP has been send to your registered email");
-            $(".stage2").show();
         });
 
         $("#otp").keyup(function () {
-            if ($(this).val().length == 6) $(".otp-check").prop("disabled", false).removeClass("disabled");
-            else $(".otp-check").prop("disabled", false).addClass("disabled");
+            if ($(this).val().length == 6) $(".otp-check").text('verify').prop("disabled", false).removeClass("disabled");
+            else $(".otp-check").prop("disabled", false).text('verify').addClass("disabled");
         });
         $(".otp-check").click(function () {
+            var id = $(this).val();
             var spinner = " <i class='fa fa-spinner text-white' aria-hidden='true'></i>"
-            $(this).html(spinner).prop("disabled", true).closest(".form-group").hide();
-            $(".msg").html("verified succesfully <br>redirecting to voting page....")
+            $(this).html(spinner).prop("disabled", true);
+            $.ajax({
+                url: "otp_check",
+                type: "POST",
+                data: { otp: $("#otp").val(), id: id },
+                success: function (data) {
+                    if (data[0] == true) {
+                        $(".msg").html("<span class='text-success'>verified successfully redirecting to voting page..<br> if not redirecting automatically <a href='/vote'>Cick here</a></span>");
+                        $(".msg").closest("form-group").toggle()
+                        window.location.href = '/vote';
+                    }
+                    else
+                        $(".msg").html("<span class='text-danger'>" + data[1] + "</span>");
+                },
+                error: function (data) {
+                    $(".msg").html("<span class='text-danger'>something went wrong <a href='/'> Try again..</a></span>");
+                }
+            });
         });
 
         $(window).resize(() => {

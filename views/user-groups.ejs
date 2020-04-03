@@ -32,13 +32,11 @@
 
 <section id="usersTable">
   <div class="container">
-    <div class="row mt-3">
-      <div class="col-12 text-center h3">
+    <div class="row">
+      <div class="col-12 text-center h3 mt-3 mb-3">
         user-groups <i class="fa fa-users" aria-hidden="true"></i>
       </div>
-    </div>
-    <div class="row mt-3">
-      <div class="col-8">
+      <div class="col-12 col-md-8">
         <table class="table table-responsive">
           <thead>
             <tr>
@@ -76,17 +74,17 @@
           </tbody>
         </table>
       </div>
-      <div class="col-4 text-center">
-        <h4>new requests</h4>
+      <div class="col-12 col-md-4 text-center">
         <% for (i=0 ; i<data.length; i++){%>
         <% if(data[i].Status == "pending") {%>
-        <div class="row">
-          <div class="col-12 bg-dark text-white p-2">
+        <div class="row p-3">
+          <div class='col-12 text-center h4'>new requests</div>
+          <div class="col-12 bg-dark text-white p-3">
             <%=data[i].Email%>
-            <button class="btn btn-sm btn-danger req_reject" value="<%=data[i]._id%>">
+            <button class="btn btn-sm btn-danger req_reject" value="<%=data[i]._id%>" data='<%=data[i].Email%>'>
               reject
             </button>
-            <button class="btn btn-sm btn-success req_accept" value="<%=data[i]._id%>">
+            <button class="btn btn-sm btn-success req_accept" value="<%=data[i]._id%>" data='<%=data[i].Email%>'>
               Accept
             </button>
           </div>
@@ -155,10 +153,11 @@
 
     $(".req_reject").click(function () {
       var id = $(this).val();
+      email = $(this).attr("data");
       $.ajax({
         url: "admin_request_reject",
         type: "POST",
-        data: { id: id },
+        data: { id: id, email: email },
         success: function (data) {
           if (data[0] == true)
             window.location.reload();
@@ -173,10 +172,11 @@
 
     $(".req_accept").click(function () {
       var id = $(this).val();
+      email = $(this).attr("data");
       $.ajax({
         url: "admin_request_accept",
         type: "POST",
-        data: { id: id },
+        data: { id: id, email: email },
         success: function (data) {
           if (data[0] == true)
             window.location.reload();
