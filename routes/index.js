@@ -55,10 +55,8 @@ var upload = multer({ storage: storage });
 
 //#region user view
 // home
-router.get("/", async function(req, res) {
-  let result = await Candidate.find({});
-  let result1 = await event.find({ id: "1" });
-  res.render("index", { cad: result, event: result1 });
+router.get("/", (req, res) => {
+  res.render("index");
 });
 
 // voting page
@@ -70,7 +68,6 @@ router.get("/vote", authVoter, function(req, res) {
     }
   });
 });
-//#endregion
 
 // giving vote to candidtaes
 router.post("/give_vote", authVoter, async (req, res) => {
@@ -96,6 +93,60 @@ router.post("/give_vote", authVoter, async (req, res) => {
     }
   });
 });
+
+// home request
+router.post("/home", async (req, res) => {
+  await event.findOne({ id: "1", showHome: true }, (err, obj) => {
+    if (err) console.log(err);
+    else if (obj == null) {
+      res.send(false);
+    } else {
+      res.json(obj);
+    }
+  });
+});
+
+// candidates request
+router.post("/candidates", async (req, res) => {
+  await event.findOne({ id: "1", showCandidates: true }, async (err, obj) => {
+    if (err) console.log(err);
+    else if (obj == null) {
+      res.send(false);
+    } else {
+      await Candidate.find({}, (err, result) => {
+        if (err) console.log(err);
+        else res.json(result);
+      });
+    }
+  });
+});
+
+// result request
+router.post("/result", async (req, res) => {
+  await event.findOne({ id: "1", showResult: true }, async (err, obj) => {
+    if (err) console.log(err);
+    else if (obj == null) {
+      res.send(false);
+    } else {
+      let result = await Candidate.find({}).sort({ score: -1 });
+      res.json(result);
+    }
+  });
+});
+
+//get voters
+router.post("/voters", async (req, res) => {
+  await event.findOne({ id: "1", showResult: true }, async (err, obj) => {
+    if (err) console.log(err);
+    else if (obj == null) {
+      res.send(false);
+    } else {
+      let result = await Voter.count();
+      res.json(result);
+    }
+  });
+});
+//#endregion
 
 //#region voter authinaction middleware
 
@@ -248,6 +299,78 @@ router.post("/updateEvent", authToken, async (req, res) => {
     if (err) console.log(err);
     else {
       res.send(obj);
+    }
+  });
+});
+
+// result page control
+router.post("/showResult", authToken, async (req, res) => {
+  var id = req.body.id;
+
+  await event.findOne({ _id: id }, async (err, obj) => {
+    if (err) console.log(err);
+    else {
+      if (obj.showResult == true) {
+        let m = await event.updateOne(
+          { _id: id },
+          { $set: { showResult: false } }
+        );
+        console.log(m);
+        res.send(m);
+      } else {
+        let m = await event.updateOne(
+          { _id: id },
+          { $set: { showResult: true } }
+        );
+        console.log(m);
+        res.send(m);
+      }
+    }
+  });
+});
+// candidates page control
+router.post("/showCandidates", authToken, async (req, res) => {
+  var id = req.body.id;
+
+  await event.findOne({ _id: id }, async (err, obj) => {
+    if (err) console.log(err);
+    else {
+      if (obj.showCandidates == true) {
+        let m = await event.updateOne(
+          { _id: id },
+          { $set: { showCandidates: false } }
+        );
+        res.send(m);
+      } else {
+        let m = await event.updateOne(
+          { _id: id },
+          { $set: { showCandidates: true } }
+        );
+        res.send(m);
+      }
+    }
+  });
+});
+// home page control
+router.post("/showHome", authToken, async (req, res) => {
+  var id = req.body.id;
+
+  await event.findOne({ _id: id }, async (err, obj) => {
+    if (err) console.log(err);
+    else {
+      if (obj.showHome == true) {
+        let m = await event.updateOne(
+          { _id: id },
+          { $set: { showHome: false } }
+        );
+        res.send(m);
+      } else {
+        let m = await event.updateOne(
+          { _id: id },
+          { $set: { showHome: true } }
+        );
+        res.send(m);
+      }
     }
   });
 });

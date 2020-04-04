@@ -9,6 +9,9 @@ const eventSchema = new Schema({
   date: String,
   time: String,
   edate: String,
-  etime: String
+  etime: String,
+  showResult: Boolean,
+  showCandidates: Boolean,
+  showHome: Boolean
 });
 module.exports = mongoose.model("event", eventSchema);

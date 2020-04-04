@@ -37,97 +37,35 @@
     </div>
 </div>
 
-<section class="main_content  mt-5 mb-5" id="sectionTM">
+
+<section class="main_content mt-5" id="sectionTM">
     <!-- countdown-timer -->
     <div class="container text-white" id="time">
-        <div class="row">
-            <div class="col-12 text-center mt-5 pt-5">
-                <!-- election header -->
-                <h1 class="election_header"><%=event[0].header %> </h1>
-                <p class="orgby"> <%=event[0].orgby %></p>
-                <p class="time-caption">
-                    <sapn class="h5">voting begins in..</sapn>
-                </p>
-            </div>
 
-            <div class="col-3 col-md-3 text-center p-4 tm"><span class="h3 days"></span><br><span>Days</span></div>
-            <div class="col-3 col-md-3 text-center p-4 tm"><span class="h3 hours"></span><br><span>Hours</span></div>
-            <div class="col-3 col-md-3 text-center p-4 tm"><span class="h3 minutes"></span><br><span>minutes</span>
-            </div>
-            <div class="col-3 col-md-3 text-center p-4 tm"><span class="h3 seconds"></span><br><span>seconds</span>
-            </div>
-
-            <div class="col-12 text-center move-cont mb-3">
-                <a class="text-white" data-toggle="modal" data-target="#voteAuth" data-backdrop="static"
-                    data-keyboard="false"><i class="fa fa-thumbs-up fa-3x move" aria-hidden="true"></i><br>vote
-                    now</a>
-            </div>
-        </div>
     </div>
 </section>
 
 <!-- candidates -->
-<div class="container  mt-5 mb-5" id="sectionCD">
-    <div class="row" id="time">
-        <div class="col-12 p-4 text-center display-4">
-            Candidates
-        </div>
-        <% if(cad){ %>
-        <% for(i=0;i<cad.length;i++){ %>
-        <!-- Button trigger modal -->
-        <div class="col-6 col-md-4 text-center mb-3">
-            <a data-toggle="modal" data-target="#<%=cad[i]._id%>">
-                <img src="<%=cad[i].image%>" class="img-thumbnail img-fluid rounded-circle"
-                    style="width:100px;height:100px;">
-            </a>
-        </div>
-        <!-- Modal -->
-        <div class="modal fade p-5" id="<%=cad[i]._id%>" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><%=cad[i].name%></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <h5>
-                            from <%=cad[i].party%> <img src="<%=cad[i].symbol%>" class="float-right" style="width:30px;"
-                                data-toggle="tooltip" title="<%=cad[i].party%>">
-                        </h5>
-                        <p><%=cad[i].about%></p>
-                    </div>
-                </div>
-            </div>
+<div class="container mt-5 mb-5" id="sectionCD">
+    <div class="row candidates_show pt-4">
 
-        </div>
-
-        <% }%>
-        <% } %>
     </div>
 </div>
-<!-- charts -->
+<!-- result -->
 <div class="container mt-5 mb-5" id="sectionRS">
+    <div class="row result-table">
+    </div>
     <div class="row">
-        <div class="col-12 display-4 text-center">Results
-            <hr>
-        </div>
-        <div class="col-md-6 p-3">
-            <canvas id="pieChart"></canvas>
-        </div>
-        <div class="col-md-6 p-3">
-            <canvas id="donutChart"></canvas>
-        </div>
+        <div class='col-md-6 p-3'><canvas id='pieChart'></canvas></div>
+        <div class='col-md-6 p-3'><canvas id='donutChart'></canvas></div>
     </div>
 </div>
 
 <%-include user_common/footer.ejs%>
 <script>
-    function votingStartIn() {
+    function votingStartIn(date, time, edate, etime) {
         var votebtn = $('.move-cont'),
-            eventTime = moment("<%=event[0].date %> <%=event[0].time %>", 'DD-MM-YYYY HH:mm:ss').unix(),
+            eventTime = moment(date + " " + time, 'DD-MM-YYYY HH:mm:ss').unix(),
             currentTime = moment().unix(),
             diffTime = eventTime - currentTime,
             duration = moment.duration(diffTime * 1000, 'milliseconds'),
@@ -166,7 +104,7 @@
 
                 if (d == '00' && h == '00' && m == "00" && s == "00") {
                     clearInterval(tv);
-                    votingEndIn();
+                    votingEndIn(edate, etime);
                     votebtn.show();
                     $(".time-caption").html("<span class='h5'>voting ends in..</span>");
                 }
@@ -176,14 +114,14 @@
         else {
             $(".time-caption").html("<span class='h5'>voting ends in..</span>");
             votebtn.show();
-            votingEndIn();
+            votingEndIn(edate, etime);
         }
     }
 
-    function votingEndIn() {
+    function votingEndIn(edate, etime) {
 
         var votebtn = $('.move-cont'),
-            eventTime = moment("<%=event[0].edate%> <%=event[0].etime%>", 'DD-MM-YYYY HH:mm:ss').unix(),
+            eventTime = moment(edate + " " + etime, 'DD-MM-YYYY HH:mm:ss').unix(),
             currentTime = moment().unix(),
             diffTime = eventTime - currentTime,
             duration = moment.duration(diffTime * 1000, 'milliseconds'),
@@ -239,82 +177,203 @@
     }
 
     window.onload = function (e) {
-
-        if (event) {
-            votingStartIn();
+        var page = localStorage.getItem("page");
+        if (page) {
+            $("#" + page).trigger("click");
+        }
+        else {
+            $("#home").trigger("click");
         }
 
         $(".main_content").css("min-height", window.innerHeight);
         $(".main_content").css("min-width", window.innerwidth);
+
     };
 
+    $(window).resize(() => {
+        $(".main_content").css("min-height", window.innerHeight);
+        $(".main_content").css("min-width", window.innerwidth);
+    });
+    $(document).on({
+        ajaxStart: function () { $(".spinner").show(); },
+        ajaxStop: function () { $(".spinner").hide(); }
+    })
+
     $(document).ready(function () {
+
+        var parties = [],
+            score = [],
+            voters = ["Total vote Given", "Voters left"],
+            voteGiven = 0;
+        $(".spinner").fadeOut();
+        $("[data-toggle='tooltip']").tooltip();
         $("#sectionCD,#sectionRS").hide();
 
         $("#home").click(function () {
+            localStorage.setItem("page", "home");
             $("#sectionTM").show();
-            $("#sectionCD,#sectionRS").hide("d-none");
+            $("#sectionCD,#sectionRS").hide();
+            $.ajax({
+                url: "/home",
+                type: "POST",
+                success: function (data) {
+                    if (data != false) {
+                        $("#time").html("");
+                        var record = "<div class='row'><div class='col-12 text-center mt-5 pt-5'>";
+                        record += "<h1 class='election_header'>" + data.header + "</h1>";
+                        record += "<p class='orgby'>" + data.orgby + "</p><p class='time-caption'><span class='h5'>voting begins in..</sapn></p></div>";
+                        record += "<div class='col-3 col-md-3 text-center p-4 tm'><span class='h3 days'></span><br><span>Days</span></div>";
+                        record += "<div class='col-3 col-md-3 text-center p-4 tm'><span class='h3 hours'></span><br><span>Hours</span></div>";
+                        record += "<div class='col-3 col-md-3 text-center p-4 tm'><span class='h3 minutes'></span><br><span>minutes</span></div>";
+                        record += "<div class='col-3 col-md-3 text-center p-4 tm'><span class='h3 seconds'></span><br><span>seconds</span></div>";
+                        record += "<div class='col-12 text-center move-cont mb-3'><a class='text-white' data-toggle='modal' data-target='#voteAuth' data-backdrop='static' data-keyboard='false'><i class='fa fa-thumbs-up fa-3x move' aria-hidden='true'></i><br>";
+                        record += "vote now</a> </div></div>";
+                        $("#time").append(record);
+                        votingStartIn(data.date, data.time, data.edate, data.etime);
+                    }
+                    else {
+                        $("#time").html("<div class='row'><div class='col-12 text-center mt-5 pt-5 h4'>No events avilable<div></div>");
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
         });
         $("#cad").click(function () {
+            localStorage.setItem("page", "cad");
             $("#sectionTM,#sectionRS").hide();
             $("#sectionCD").show();
+            $.ajax({
+                url: "candidates",
+                type: "POST",
+                success: function (data) {
+                    if (data != false) {
+                        $(".candidates_show").html("");
+                        for (var i = 0; i < data.length; i++) {
+                            var record = "";
+                            record = "<div class='col-6 col-md-4 text-center mt-4 pt-4'>";
+                            record += "<a data-toggle='modal' data-target='#" + data[i]._id + "'>";
+                            record += "<img src='" + data[i].image + "' class='img-thumbnail img-fluid rounded-circle' style='width:100px;height:100px;'></a></div>";
+                            record += "<div class='modal fade p-5' id='" + data[i]._id + "' tabindex='-1' role='dialog' aria-labelledby='modelTitleId' aria-hidden='true'>";
+                            record += "<div class='modal-dialog modal-dialog-centered' role='document'>";
+                            record += "<div class='modal-content'><div class='modal-header'><h5 class='modal-title'>" + data[i].name + "</h5>";
+                            record += "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>";
+                            record += "<span aria-hidden='true'>&times;</span></button></div><div class='modal-body'>";
+                            record += "<h5>from" + data[i].party + " <img src='" + data[i].symbol + "' class='float-right' style='width:30px;' data-toggle='tooltip' title='" + data[i].party + "'>";
+                            record += "</h5><p>" + data[i].about + "</p></div></div></div></div>";
+
+                            $(".candidates_show").append(record);
+                        }
+                    }
+                    else {
+                        $(".candidates_show").append("<div class='col-12 text-center pt-4 display-4'>Not availble..</div>");
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
         });
         $("#res").click(function () {
+            localStorage.setItem("page", "res");
             $("#sectionTM,#sectionCD").hide();
             $("#sectionRS").show();
+            $.ajax({
+                url: "result",
+                type: "POST",
+                success: function (data) {
+                    if (data != false) {
+                        $(".result-table").html("");
+                        var tstart = "<div class='col-md-12 pt-4'><div class='table-responsive'><table class='table'><thead><tr><th>Candidate</th><th></th><th></th><th>Party</th><th>vote count</th></tr></thead><tbody>";
+                        $(".result-table").append(tstart);
+                        for (var i = 0; i < data.length; i++) {
+                            parties.push(data[i].party);
+                            score.push(data[i].score);
+                            voteGiven += data[i].score;
+                            var record = "<tr>";
+                            record += "<td><img src='" + data[i].image + "' class='rounded-circle img-thumbnail img-fluid' style='height:50px;width:50px'></td>";
+                            record += "<td><strong>" + data[i].name + "</strong></td>";
+                            record += "<td>from</td>";
+                            record += "<td><strong>" + data[i].party + "</strong></td>";
+                            record += "<td class='p-2'><img src='" + data[i].symbol + "' class='rounded-circle img-thumbnail img-fluid ' style='height:50px;width:50px'>";
+                            record += "<span class='badge badge-secondry badge-success'>" + data[i].score + "</span></td></tr>";
+                            $(".result-table table tbody").append(record);
+                        }
+                        var tend = "</tbody></table></div></div>";
+                        $(".result-table").append(tend);
+                        chart1(parties, score);
+                    } else {
+                        $(".result-table").append("<div class='col-12 text-center mt-4 pt-4 display-4'>Not available..</div>");
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
+            $.ajax({
+                url: "/voters",
+                type: "POST",
+                success: function (data) {
+                    if (data != false)
+                        chart2(voters, [voteGiven, data - voteGiven]);
+                },
+                error: function (data) {
+                    console.log(data);
+                }
+            });
         });
 
-        $("[data-toggle='tooltip']").tooltip();
-        //#region 
-        //- DONUT CHART -
-        //-------------
-        // Get context with jQuery - using jQuery's .get() method.
-        var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
-        var donutData = {
-            labels: [
-                'BJP',
-                'Trinmool',
-                'Congress',
-                'AAP',
-            ],
-            datasets: [
-                {
-                    data: [700, 500, 400, 300],
-                    backgroundColor: ['#f39c12', '#00a65a', '#f56954', '#d2d6de'],
-                }
-            ]
-        }
-        var donutOptions = {
-            maintainAspectRatio: true,
-            responsive: true,
-        }
-        //Create pie or douhnut chart
-        // You can switch between pie and douhnut using the method below.
-        var donutChart = new Chart(donutChartCanvas, {
-            type: 'doughnut',
-            data: donutData,
-            options: donutOptions
-        })
 
-        //-------------
-        //- PIE CHART -
-        //-------------
-        // Get context with jQuery - using jQuery's .get() method.
-        var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-        var pieData = donutData;
-        var pieOptions = {
-            maintainAspectRatio: true,
-            responsive: true,
+        function chart1(parties, score) {
+            //- DONUT CHART -
+            var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
+            var donutData = {
+                labels: parties,
+                datasets: [
+                    {
+                        data: score,
+                        backgroundColor: ['#f39c12', '#00a65a', '#d2d6de'],
+                    }
+                ]
+            }
+            var donutOptions = {
+                maintainAspectRatio: true,
+                responsive: true,
+            }
+            var donutChart = new Chart(donutChartCanvas, {
+                type: 'doughnut',
+                data: donutData,
+                options: donutOptions
+            })
         }
-        //Create pie or douhnut chart
-        // You can switch between pie and douhnut using the method below.
-        var pieChart = new Chart(pieChartCanvas, {
-            type: 'pie',
-            data: pieData,
-            options: pieOptions
-        })
+        function chart2(voters, votes) {
+            //- PIE CHART -
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            var pieData = {
+                labels: voters,
+                datasets: [
+                    {
+                        data: votes,
+                        backgroundColor: ['#f39c12', '#d2d6de'],
+                    }
+                ]
+            }
+            var pieOptions = {
+                maintainAspectRatio: true,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            var pieChart = new Chart(pieChartCanvas, {
+                type: 'pie',
+                data: pieData,
+                options: pieOptions
+            });
 
-        //#endregion
+        }
+
+
         $(".stage2").hide();
         $("#uid").keyup(function () {
             if ($(this).val().length == 12) $(".otp-send").text("send OTP").prop("disabled", false).removeClass("disabled");
@@ -366,11 +425,6 @@
                     $(".msg").html("<span class='text-danger'>something went wrong <a href='/'> Try again..</a></span>");
                 }
             });
-        });
-
-        $(window).resize(() => {
-            $(".main_content").css("min-height", window.innerHeight);
-            $(".main_content").css("min-width", window.innerwidth);
         });
 
     });

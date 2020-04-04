@@ -69,6 +69,28 @@
                 </div>
             </form>
         </div>
+        <div class="col-12 col-md-12 mt-4 text-center">
+            <% if(event.showHome == false){ %>
+            <button class="btn btn-success btn-xl showHome" value="<%=event._id%>">showhome</button>
+            <% }else{ %>
+            <button class="btn btn-danger btn-xl showHome" value="<%=event._id%>">hide
+                home</button>
+            <% } %>
+            <% if(event.showCandidates == false){ %>
+            <button class="btn btn-success btn-xl showCandidates" value="<%=event._id%>">show
+                candidates</button>
+            <% }else{ %>
+            <button class="btn btn-danger btn-xl showCandidates" value="<%=event._id%>">hide
+                candidates</button>
+            <% } %>
+            <% if(event.showResult == false){ %>
+            <button class="btn btn-success btn-xl showResult" value="<%=event._id%>">show
+                results</button>
+            <% }else{ %>
+            <button class="btn btn-danger btn-xl showResult" value="<%=event._id%>">hide
+                results</button>
+            <% } %>
+        </div>
         <% } %>
     </div>
     <%-include admin_common/footer.ejs%>
@@ -108,6 +130,46 @@
                     url: "updateEvent",
                     type: "POST",
                     data: { event: JSON.stringify(event), id: id },
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+
+            $(".showHome").click(function () {
+                $.ajax({
+                    url: "showHome",
+                    type: "POST",
+                    data: { id: $(this).val() },
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+            $(".showCandidates").click(function () {
+                $.ajax({
+                    url: "showCandidates",
+                    type: "POST",
+                    data: { id: $(this).val() },
+                    success: function (data) {
+                        window.location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+            $(".showResult").click(function () {
+                $.ajax({
+                    url: "showResult",
+                    type: "POST",
+                    data: { id: $(this).val() },
                     success: function (data) {
                         window.location.reload();
                     },
