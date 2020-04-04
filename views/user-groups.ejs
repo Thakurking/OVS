@@ -1,0 +1,193 @@
+<%-include admin_common/header.ejs%>
+
+<!-- user update modal -->
+<div class="modal fade" id="userUpdateModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form class="user_form">
+          <!-- name-->
+          <div class="form-group">
+            <input type="text" class="form-control" id="uemail" placeholder="email">
+          </div>
+          <!-- email -->
+          <div class="form-group">
+            <input type="email" class="form-control" id="urole" placeholder="role">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button class="btn btn-primary disabled" disabled id="userDetailUpdate" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section id="usersTable">
+  <div class="container">
+    <div class="row">
+      <div class="col-12 text-center h3 mt-3 mb-3">
+        user-groups <i class="fa fa-users" aria-hidden="true"></i>
+      </div>
+      <div class="col-12 col-md-8">
+        <table class="table table-responsive">
+          <thead>
+            <tr>
+              <th>email</th>
+              <th>role</th>
+              <th>status</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% for (i=0 ; i<data.length; i++){%>
+            <% if(data[i].Status != "pending" && data[i].Role != "superadmin") {%>
+            <tr>
+              <td class="em"><%=data[i].Email%></td>
+              <td class="ro"><%=data[i].Role%></td>
+              <td>
+                <% if(data[i].Status== "active") {%>
+                <button class="btn btn-success btn-sm statusToggle"
+                  value="<%=data[i]._id%>"><%=data[i].Status%></button>
+                <% } %>
+                <% if(data[i].Status== "deactive") {%>
+                <button class="btn btn-danger btn-sm statusToggle" value="<%=data[i]._id%>"><%=data[i].Status%></span>
+                  <% } %>
+              </td>
+              <td>
+                <button class="btn btn-success btn-sm userEdit" data-toggle="modal" data-target="#userUpdateModal"
+                  value="<%=data[i]._id%>">
+                  <i class="fas fa-edit" aria-hidden="true"></i>
+                </button>
+              </td>
+            </tr>
+            <% } %>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-12 col-md-4 text-center">
+        <% for (i=0 ; i<data.length; i++){%>
+        <% if(data[i].Status == "pending") {%>
+        <div class="row p-3">
+          <div class='col-12 text-center h4'>new requests</div>
+          <div class="col-12 bg-dark text-white p-3">
+            <%=data[i].Email%>
+            <button class="btn btn-sm btn-danger req_reject" value="<%=data[i]._id%>" data='<%=data[i].Email%>'>
+              reject
+            </button>
+            <button class="btn btn-sm btn-success req_accept" value="<%=data[i]._id%>" data='<%=data[i].Email%>'>
+              Accept
+            </button>
+          </div>
+        </div>
+        <% }} %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%-include admin_common/footer.ejs%>
+<script>
+  $(document).ready(function () {
+    $(":input").keyup(function () {
+      if ($("#uemail").val() != "" && $("#urole").val() != "") {
+        $("#userDetailUpdate").prop("disabled", false).removeClass("disabled");
+      }
+      else {
+        $("#userDetailUpdate").prop("disabled", true).addClass("disabled");
+      }
+    });
+
+
+    $(".userEdit").click(function () {
+      var id = $(this).val();
+      $("#uemail").val($(this).closest('tr').find('.em').text());
+      $("#urole").val($(this).closest('tr').find('.ro').text());
+
+      $('#userDetailUpdate').click(function () {
+        var admin = {
+          Email: $('#uemail').val(),
+          Role: $('#urole').val()
+        }
+        $.ajax({
+          url: "adminUpdate",
+          type: "POST",
+          data: { admin: JSON.stringify(admin), id: id },
+          success: function (data) {
+            window.location.reload();
+          },
+          error: function (data) {
+            console.log(data);
+          }
+        });
+      });
+
+    });
+
+    $(".statusToggle").click(function () {
+      var id = $(this).val();
+      $.ajax({
+        url: "status_toggle",
+        type: "POST",
+        data: { id: id },
+        success: function (data) {
+          if (data[0] == true)
+            window.location.reload();
+          else
+            toastr.error(data[1]);
+        },
+        error: function (data) {
+          toastr.error(data);
+        }
+      });
+    });
+
+    $(".req_reject").click(function () {
+      var id = $(this).val();
+      email = $(this).attr("data");
+      $.ajax({
+        url: "admin_request_reject",
+        type: "POST",
+        data: { id: id, email: email },
+        success: function (data) {
+          if (data[0] == true)
+            window.location.reload();
+          else
+            toastr.error(data[1]);
+        },
+        error: function (data) {
+          toastr.error(data);
+        }
+      });
+    });
+
+    $(".req_accept").click(function () {
+      var id = $(this).val();
+      email = $(this).attr("data");
+      $.ajax({
+        url: "admin_request_accept",
+        type: "POST",
+        data: { id: id, email: email },
+        success: function (data) {
+          if (data[0] == true)
+            window.location.reload();
+          else
+            toastr.error(data[1]);
+        },
+        error: function (data) {
+          toastr.error(data);
+        }
+      });
+    });
+
+  });
+</script>

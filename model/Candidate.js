@@ -10,6 +10,7 @@ const CandidateSchema = new Schema({
   aadhar: String,
   image: String,
   party: String,
-  symbol: String
+  symbol: String,
+  score: Number
 });
 module.exports = mongoose.model("Candidate", CandidateSchema);

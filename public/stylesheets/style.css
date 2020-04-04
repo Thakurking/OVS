@@ -8,10 +8,7 @@ a {
 } */
 
 body {
-  background: #000 !important;
-}
-.card {
-  border: 1px solid #28a745;
+  background: linear-gradient(90deg, #aa076b, #61045f) !important;
 }
 .card-login {
   margin-top: 130px;
@@ -21,7 +18,7 @@ body {
 
 .card-header {
   color: #fff;
-  /*background: #ff0000;*/
+  background: #ff0000;
   font-family: sans-serif;
   font-size: 20px;
   font-weight: 600 !important;
@@ -29,23 +26,23 @@ body {
   border-bottom: 0;
 }
 
-.input-group-prepend span{
+.input-group-prepend span {
   width: 50px;
   background-color: #ff0000;
   color: #fff;
-  border:0 !important;
+  border: 0 !important;
 }
 
-input:focus{
-  outline: 0 0 0 0  !important;
+input:focus {
+  outline: 0 0 0 0 !important;
   box-shadow: 0 0 0 0 !important;
 }
 
-.login_btn{
+.login_btn {
   width: 130px;
 }
 
-.login_btn:hover{
+.login_btn:hover {
   color: #fff;
   background-color: #ff0000;
 }
