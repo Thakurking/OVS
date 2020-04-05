@@ -10,6 +10,7 @@ const CandidateSchema = new Schema({
   aadhar: String,
   image: String,
   party: String,
+  color: String,
   symbol: String,
   score: Number
 });

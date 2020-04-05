@@ -18,6 +18,8 @@
                 <div class="col d-md-none d-lg-none">
                     <hr>
                 </div>
+                <div class="col-12 m-3 p-3 text-center text-danger">Note: time should be in 24 hour format</div>
+
                 <div class="form-group col-md-3">
                     <label for="date">Starts on</label>
                     <input type="text" readonly class="form-control" value="<%=event.date %>" id="date"
@@ -62,7 +64,6 @@
                         minlength="2" maxlength="2">
                 </div>
 
-                <div class="col-12 small mb-1 text-center text-muted">time should be in 24 hour format</div>
                 <div class="form-group col-12">
                     <button class="btn btn-success btn-block disabled" value="<%=event._id%>" id="saveEvent"
                         disabled>Save</button>

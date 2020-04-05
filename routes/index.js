@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 var validator = require("validator");
 const fs = require("fs");
 var multer = require("multer");
+const moment = require("moment");
 /***********DATABASE Model Modules***********/
 const Admin = require("../model/Admin");
 const Candidate = require("../model/Candidate");
@@ -101,7 +102,7 @@ router.post("/home", async (req, res) => {
     else if (obj == null) {
       res.send(false);
     } else {
-      res.json(obj);
+      res.send({ event: obj, ctime: moment().unix() });
     }
   });
 });
@@ -141,7 +142,7 @@ router.post("/voters", async (req, res) => {
     else if (obj == null) {
       res.send(false);
     } else {
-      let result = await Voter.count();
+      let result = await Voter.countDocuments();
       res.json(result);
     }
   });
@@ -291,8 +292,8 @@ router.post("/createEvent", authToken, function(req, res) {
 
 // update event
 router.post("/updateEvent", authToken, async (req, res) => {
-  var event = JSON.parse(req.body.event);
-  await event.updateOne({ _id: req.body.id }, { $set: event }, function(
+  var eve = JSON.parse(req.body.event);
+  await event.updateOne({ _id: req.body.id }, { $set: eve }, function(
     err,
     obj
   ) {
@@ -401,6 +402,7 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
     aadhar: req.body.aadhar,
     image: imgPath.replace("\\", "/"),
     party: req.body.party,
+    party: req.body.color,
     symbol: symbPath.replace("\\", "/")
   };
   if (
@@ -409,6 +411,7 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
     Candidate_Data.phone != "" &&
     Candidate_Data.aadhar != "" &&
     Candidate_Data.party != "" &&
+    Candidate_Data.color != "" &&
     Candidate_Data.about != ""
   ) {
     Candidate.create(Candidate_Data, function(err, result) {
@@ -674,34 +677,48 @@ router.post("/admin_request_reject", async (req, res) => {
 
 // voters otp send
 router.post("/otp_send", async (req, res) => {
-  await Voter.findOne({ aadhar: req.body.uid }, (err, obj) => {
-    if (err) {
+  await event.findOne({ id: "1", showHome: true }, async (err, obj) => {
+    if (err) console.log(err);
+    else if (obj == null) {
       res.send([false, "something went wrong"]);
-    } else if (obj == null) {
-      res.send([false, "you are not eligible for voting"]);
-    } else if (obj.status == "y") {
-      res.send([false, "you have already voted once"]);
+    } else if (
+      moment().unix() >=
+        moment(obj.edate + " " + obj.etime, "DD-MM-YYYY HH:mm:ss").unix() ||
+      moment().unix() <=
+        moment(obj.date + " " + obj.time, "DD-MM-YYYY HH:mm:ss").unix()
+    ) {
+      res.send([false, "invalid request"]);
     } else {
-      var otp1 = String(Math.floor(100000 + Math.random() * 900000));
-      Voter.updateOne(
-        { _id: obj._id },
-        { $set: { otp: otp1, status: "n" } },
-        (err, result) => {
-          if (err) console.log(err);
-          else {
-            msg = "your requested OTP is " + otp1;
-            if (mail(obj.email, "OVS request for otp", msg)) {
-              res.send([
-                true,
-                "A one time otp has been sent to your email",
-                obj._id
-              ]);
-            } else {
-              res.send([false, "couldn't send otp"]);
+      await Voter.findOne({ aadhar: req.body.uid }, (err, obj) => {
+        if (err) {
+          res.send([false, "something went wrong"]);
+        } else if (obj == null) {
+          res.send([false, "you are not eligible for voting"]);
+        } else if (obj.status == "y") {
+          res.send([false, "you have already voted once"]);
+        } else {
+          var otp1 = String(Math.floor(100000 + Math.random() * 900000));
+          Voter.updateOne(
+            { _id: obj._id },
+            { $set: { otp: otp1, status: "n" } },
+            (err, result) => {
+              if (err) res.send([false, "couldn't genrate otp "]);
+              else {
+                msg = "your requested OTP is " + otp1;
+                if (mail(obj.email, "OVS request for otp", msg)) {
+                  res.send([
+                    true,
+                    "A one time otp has been sent to your email",
+                    obj._id
+                  ]);
+                } else {
+                  res.send([false, "couldn't send otp"]);
+                }
+              }
             }
-          }
+          );
         }
-      );
+      });
     }
   });
 });
@@ -753,7 +770,7 @@ async function mail(email, subject, data) {
   });
 
   // send mail with defined transport object
-  let info = await transporter.sendMail(
+  await await transporter.sendMail(
     {
       from: "playersarenateam@gmail.com", // sender address
       to: email, // list of receivers
@@ -761,9 +778,12 @@ async function mail(email, subject, data) {
       //text: "your otp is " + otp, // plain text body
       html: data // html body
     },
-    function(error, result) {
-      if (error) return false;
-      else return true;
+    (err, info) => {
+      if (err) {
+        return false;
+      } else {
+        return true;
+      }
     }
   );
 }
