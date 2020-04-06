@@ -1,13 +1,23 @@
 <%-include admin_common/header.ejs%>
 <div class="container">
     <div class="row">
-        <% if(event && time){ %>
+        <% if(event == null){ %>
+        <div class="col-12 text-center display-4">
+            No events available<br>
+            <button class="btn btn-xl btn-primary mt-5" id=createEvent>
+                <i class=" fa fa-plus" aria-hidden="true"></i> Create new event
+            </button>
+        </div>
+        <% } %>
+    </div>
+    <div class="row">
+        <% if(event!= null){ %>
         <div class="col-12 display-4 display text-center">Events</div>
         <div class="col-12 col-md-12 mt-4 text-center">
             <form class="form border border-md-only p-4 row" id="eventForm">
                 <div class="form-group col-md-6">
                     <label for="header">Event header</label>
-                    <input type="text" id="header" value="<%=event.header %> " class="form-control"
+                    <input type="text" id="header" value="<%=event.header %>" class="form-control"
                         placeholder="enter event name">
                 </div>
                 <div class="form-group col-md-6">
@@ -133,6 +143,22 @@
                     data: { event: JSON.stringify(event), id: id },
                     success: function (data) {
                         window.location.reload();
+                    },
+                    error: function (data) {
+                        console.log(data);
+                    }
+                });
+            });
+
+            $("#createEvent").click(function () {
+                $.ajax({
+                    url: "createEvent",
+                    type: "POST",
+                    success: function (data) {
+                        if (data[0] == true)
+                            window.location.reload();
+                        else
+                            alert(data[1]);
                     },
                     error: function (data) {
                         console.log(data);

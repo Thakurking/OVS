@@ -102,6 +102,7 @@
         <table class="table table-responsive">
           <thead>
             <tr>
+              <th>No.</th>
               <th>name</th>
               <th>email</th>
               <th>phno</th>
@@ -113,6 +114,7 @@
           <tbody>
             <% for (i=0 ; i<data.length; i++){%>
             <tr>
+              <td><%=i+1%></td>
               <td class="nm"><%=data[i].name%></td>
               <td class="em"><%=data[i].email%></td>
               <td class="ph"><%=data[i].phone%></td>

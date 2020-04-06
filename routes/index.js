@@ -22,7 +22,7 @@ const csv = require("csvtojson");
 
 //#region Multer Path And destination settiings for image upload functions
 var storage = multer.diskStorage({
-  destination: function(req, file, callback) {
+  destination: function (req, file, callback) {
     if (
       file.mimetype === "image/jpeg" ||
       file.mimetype === "image/jpg" ||
@@ -38,7 +38,7 @@ var storage = multer.diskStorage({
       callback(null, "./uploads");
     } else callback(true, "");
   },
-  filename: function(req, file, callback) {
+  filename: function (req, file, callback) {
     if (file.mimetype === "image/jpg") callback(null, Date.now() + ".jpg");
     else if (file.mimetype === "image/jpeg")
       callback(null, Date.now() + ".jpeg");
@@ -49,7 +49,7 @@ var storage = multer.diskStorage({
     )
       callback(null, Date.now() + ".csv");
     else callback(true, "");
-  }
+  },
 });
 var upload = multer({ storage: storage });
 //#endregion
@@ -61,7 +61,7 @@ router.get("/", (req, res) => {
 });
 
 // voting page
-router.get("/vote", authVoter, function(req, res) {
+router.get("/vote", authVoter, function (req, res) {
   Candidate.find({}, (err, result) => {
     if (err) console.log(err);
     else {
@@ -155,7 +155,7 @@ function authVoter(req, res, next) {
   const token = req.cookies.voter_token;
   if (!token) res.redirect("/");
   else {
-    jwt.verify(token, "blkhrt", function(err, decoded) {
+    jwt.verify(token, "blkhrt", function (err, decoded) {
       if (err) res.redirect("/");
       else {
         next();
@@ -171,7 +171,7 @@ function authToken(req, res, next) {
   const token = req.cookies.token;
   if (!token) res.redirect("/admin");
   else {
-    jwt.verify(token, "blkhrt", function(err, decoded) {
+    jwt.verify(token, "blkhrt", function (err, decoded) {
       if (err) res.redirect("/admin");
       else {
         req.profile = decoded.data;
@@ -185,10 +185,10 @@ function authToken(req, res, next) {
 //#region admin login / logout
 
 // login page
-router.get("/admin", function(req, res) {
+router.get("/admin", function (req, res) {
   const token = req.cookies.token;
   if (token) {
-    jwt.verify(token, "blkhrt", function(err, decoded) {
+    jwt.verify(token, "blkhrt", function (err, decoded) {
       if (err) {
       } else res.redirect("/dashboard");
     });
@@ -197,13 +197,13 @@ router.get("/admin", function(req, res) {
 });
 
 //login request handle
-router.post("/loginAuth", function(req, res) {
+router.post("/loginAuth", function (req, res) {
   var Admin_Login = JSON.parse(req.body.admin_login);
   Admin.findOne(
     {
       Email: Admin_Login.Email,
       Status: "active",
-      Role: { $in: ["admin", "superadmin"] }
+      Role: { $in: ["admin", "superadmin"] },
     },
     (err, obj) => {
       if (err) {
@@ -211,7 +211,7 @@ router.post("/loginAuth", function(req, res) {
       } else if (obj == null) {
         res.send([false, "no user found"]);
       } else {
-        bcrypt.compare(Admin_Login.Password, obj.Password, function(
+        bcrypt.compare(Admin_Login.Password, obj.Password, function (
           err,
           result
         ) {
@@ -221,7 +221,7 @@ router.post("/loginAuth", function(req, res) {
             res.send([false, "password didn't not match"]);
           } else {
             var token = jwt.sign({ data: obj }, "blkhrt", {
-              expiresIn: "1h"
+              expiresIn: "1h",
             });
             res
               .cookie("token", token, { maxAge: 3600000, httpOnly: true })
@@ -234,7 +234,7 @@ router.post("/loginAuth", function(req, res) {
 });
 
 //logout
-router.get("/logout", function(req, res) {
+router.get("/logout", function (req, res) {
   res.clearCookie("token").redirect("/admin");
 });
 
@@ -258,7 +258,7 @@ router.post("/new_admin_request", async (req, res) => {
           else
             res.send([
               true,
-              "successfully submitted, your will be notified once we approve your request"
+              "successfully submitted, your will be notified once we approve your request",
             ]);
         });
       }
@@ -266,26 +266,74 @@ router.post("/new_admin_request", async (req, res) => {
   });
 });
 
+// super admin init_OVS
+router.get("/__init__OVS", async (req, res) => {
+  var email = req.query.email;
+  var pass = req.query.pass;
+  var secretKey = req.query.secretKey;
+  console.log(email, pass, secretKey);
+  if (secretKey == db.secretKey) {
+    await Admin.findOne({ Email: email }, async (err, obj) => {
+      if (err) res.json(false);
+      else if (obj != null) res.json(false);
+      else {
+        if (email != "" && validator.isEmail(email) == false) res.send(false);
+        else if (pass != "" && pass.length < 5) res.send(false);
+        else {
+          var admin = {
+            Email: email,
+            Status: "active",
+            Role: "superadmin",
+            Password: bcrypt.hashSync(pass, 8),
+          };
+          await Admin.create(admin, (err, result) => {
+            if (err) res.send(false);
+            else res.json(true);
+          });
+        }
+      }
+    });
+  } else res.json(false);
+});
 //#endregion
 
 //#region Admin Dashboard Page
-router.get("/dashboard", authToken, async function(req, res) {
+router.get("/dashboard", authToken, async function (req, res) {
   let adminProfile = await Admin.findOne({ _id: req.profile }, { Password: 0 });
   let eve = await event.findOne({ id: "1" });
-  res.render("dashboard", {
-    profile: adminProfile,
-    event: eve,
-    time: eve.time.split(":"),
-    etime: eve.etime.split(":")
-  });
+  if (eve != null) {
+    res.render("dashboard", {
+      profile: adminProfile,
+      event: eve,
+      time: eve.time.split(":"),
+      etime: eve.etime.split(":"),
+    });
+  } else {
+    res.render("dashboard", {
+      profile: adminProfile,
+      event: eve,
+    });
+  }
 });
 
 //event creator
-router.post("/createEvent", authToken, function(req, res) {
-  event.create(JSON.parse(req.body.event), function(err, obj) {
-    if (err) console.log(err);
+router.post("/createEvent", authToken, function (req, res) {
+  var eve = {
+    id: "1",
+    header: "",
+    orgby: "",
+    date: "",
+    time: "",
+    edate: "",
+    etime: "",
+    showResult: true,
+    showCandidates: true,
+    showHome: true,
+  };
+  event.create(eve, (err, obj) => {
+    if (err) res.send([false, "something went wrong"]);
     else {
-      res.send(obj);
+      res.send([true, "event created"]);
     }
   });
 });
@@ -293,7 +341,7 @@ router.post("/createEvent", authToken, function(req, res) {
 // update event
 router.post("/updateEvent", authToken, async (req, res) => {
   var eve = JSON.parse(req.body.event);
-  await event.updateOne({ _id: req.body.id }, { $set: eve }, function(
+  await event.updateOne({ _id: req.body.id }, { $set: eve }, function (
     err,
     obj
   ) {
@@ -380,7 +428,7 @@ router.post("/showHome", authToken, async (req, res) => {
 //#region Candidate admin Page
 
 // candidate record display
-router.get("/candidate", authToken, async function(req, res) {
+router.get("/candidate", authToken, async function (req, res) {
   await Candidate.find({}, (err, result) => {
     if (err) console.log(err);
     else res.render("candidate", { data: result });
@@ -388,7 +436,7 @@ router.get("/candidate", authToken, async function(req, res) {
 });
 
 //Candidate add request
-router.post("/addCandidate", authToken, upload.array("image", 2), function(
+router.post("/addCandidate", authToken, upload.array("image", 2), function (
   req,
   res
 ) {
@@ -403,7 +451,7 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
     image: imgPath.replace("\\", "/"),
     party: req.body.party,
     party: req.body.color,
-    symbol: symbPath.replace("\\", "/")
+    symbol: symbPath.replace("\\", "/"),
   };
   if (
     Candidate_Data.name != "" &&
@@ -414,7 +462,7 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
     Candidate_Data.color != "" &&
     Candidate_Data.about != ""
   ) {
-    Candidate.create(Candidate_Data, function(err, result) {
+    Candidate.create(Candidate_Data, function (err, result) {
       if (err) console.log(err);
       else res.send([true]);
     });
@@ -422,16 +470,16 @@ router.post("/addCandidate", authToken, upload.array("image", 2), function(
 });
 
 //Candidate delete request
-router.post("/delCandidate", authToken, async function(req, res) {
+router.post("/delCandidate", authToken, async function (req, res) {
   if (req.body.del_id != null) {
-    await Candidate.findOne({ _id: req.body.del_id }, function(err, obj) {
+    await Candidate.findOne({ _id: req.body.del_id }, function (err, obj) {
       if (err) console.log(err);
       else {
         if (fs.existsSync(obj.image)) fs.unlinkSync(obj.image);
         if (fs.existsSync(obj.symbol)) fs.unlinkSync(obj.symbol);
       }
     });
-    await Candidate.deleteOne({ _id: req.body.del_id }, function(err, result) {
+    await Candidate.deleteOne({ _id: req.body.del_id }, function (err, result) {
       if (err) console.log(err);
       else res.send([true]);
     });
@@ -443,9 +491,9 @@ router.post(
   "/updateCandidateImage",
   authToken,
   upload.single("image"),
-  async function(req, res) {
+  async function (req, res) {
     if (req.body.id != null) {
-      await Candidate.findOne({ _id: req.body.id }, function(err, obj) {
+      await Candidate.findOne({ _id: req.body.id }, function (err, obj) {
         if (err) console.log(err);
         else {
           if (fs.existsSync(obj.image)) fs.unlinkSync(obj.image);
@@ -454,7 +502,7 @@ router.post(
       await Candidate.updateOne(
         { _id: req.body.id },
         { $set: { image: req.file.path.replace("\\", "/") } },
-        function(err, obj) {
+        function (err, obj) {
           if (err) console.log(err);
           else res.send([true]);
         }
@@ -468,9 +516,9 @@ router.post(
   "/updatePartySymbol",
   authToken,
   upload.single("image"),
-  async function(req, res) {
+  async function (req, res) {
     if (req.body.id != null) {
-      await Candidate.findOne({ _id: req.body.id }, function(err, obj) {
+      await Candidate.findOne({ _id: req.body.id }, function (err, obj) {
         if (err) console.log(err);
         else {
           if (fs.existsSync(obj.symbol)) fs.unlinkSync(obj.symbol);
@@ -479,7 +527,7 @@ router.post(
       await Candidate.updateOne(
         { _id: req.body.id },
         { $set: { symbol: req.file.path.replace("\\", "/") } },
-        function(err, obj) {
+        function (err, obj) {
           if (err) console.log(err);
           else res.send([true]);
         }
@@ -493,9 +541,9 @@ router.post(
   "/updatePartySymbol",
   authToken,
   upload.single("image"),
-  async function(req, res) {
+  async function (req, res) {
     if (req.body.id != null) {
-      await Candidate.findOne({ _id: req.body.id }, function(err, obj) {
+      await Candidate.findOne({ _id: req.body.id }, function (err, obj) {
         if (err) console.log(err);
         else {
           if (fs.existsSync(obj.symbol)) fs.unlinkSync(obj.symbol);
@@ -504,7 +552,7 @@ router.post(
       await Candidate.updateOne(
         { _id: req.body.id },
         { $set: { symbol: req.file.path.replace("\\", "/") } },
-        function(err, obj) {
+        function (err, obj) {
           if (err) console.log(err);
           else res.send([true]);
         }
@@ -514,9 +562,9 @@ router.post(
 );
 
 //Candidate details update request
-router.post("/candidateDetailUpdate", authToken, async function(req, res) {
+router.post("/candidateDetailUpdate", authToken, async function (req, res) {
   var update = JSON.parse(req.body.update);
-  await Candidate.update({ _id: update.id }, { $set: update }, function(
+  await Candidate.update({ _id: update.id }, { $set: update }, function (
     err,
     obj
   ) {
@@ -530,7 +578,7 @@ router.post("/candidateDetailUpdate", authToken, async function(req, res) {
 //#region Voters admin Page
 
 //Voters record display
-router.get("/voter", authToken, function(req, res) {
+router.get("/voter", authToken, function (req, res) {
   Voter.find({}, (err, result) => {
     if (err) console.log(err);
     else res.render("voter", { data: result });
@@ -538,7 +586,7 @@ router.get("/voter", authToken, function(req, res) {
 });
 
 //Voter Add Request
-router.post("/voterCreate", authToken, function(req, res) {
+router.post("/voterCreate", authToken, function (req, res) {
   var voter = JSON.parse(req.body.voter);
   if (
     voter.name != "" &&
@@ -546,7 +594,7 @@ router.post("/voterCreate", authToken, function(req, res) {
     voter.phone != "" &&
     voter.aadhar != ""
   ) {
-    Voter.create(voter, function(err, result) {
+    Voter.create(voter, function (err, result) {
       if (err) console.log(err);
       else res.send([true]);
     });
@@ -554,33 +602,33 @@ router.post("/voterCreate", authToken, function(req, res) {
 });
 
 //Voter Delete Request
-router.post("/voterDel", function(req, res) {
+router.post("/voterDel", function (req, res) {
   var d_id = req.body.del_id;
-  Voter.deleteOne({ _id: d_id }, function(err, result) {
+  Voter.deleteOne({ _id: d_id }, function (err, result) {
     if (err) console.log(err);
     else res.send(result);
   });
 });
 
 //Voter Update Request
-router.post("/voterupdate", function(req, res) {
+router.post("/voterupdate", function (req, res) {
   var Voter_Data = JSON.parse(req.body.voter);
   var u_id = req.body.id;
-  Voter.update({ _id: u_id }, { $set: Voter_Data }, function(err, result) {
+  Voter.update({ _id: u_id }, { $set: Voter_Data }, function (err, result) {
     if (err) console.log(err);
     else res.send(result);
   });
 });
 
 //csv data upload voters
-router.post("/csvFileUpload", authToken, upload.single("file"), function(
+router.post("/csvFileUpload", authToken, upload.single("file"), function (
   req,
   res
 ) {
   var msgData = [];
   csv()
     .fromFile(req.file.path)
-    .then(async jsonObj => {
+    .then(async (jsonObj) => {
       for (let i = 0; i < jsonObj.length; i++) {
         await Voter.create(jsonObj[i], (err, obj) => {
           msgData[i] = jsonObj[i];
@@ -709,7 +757,7 @@ router.post("/otp_send", async (req, res) => {
                   res.send([
                     true,
                     "A one time otp has been sent to your email",
-                    obj._id
+                    obj._id,
                   ]);
                 } else {
                   res.send([false, "couldn't send otp"]);
@@ -740,12 +788,12 @@ router.post("/otp_check", async (req, res) => {
         { $set: { status: "y" } },
         (err, result) => {
           var voter_token = jwt.sign({ data: obj }, "blkhrt", {
-            expiresIn: 30000
+            expiresIn: 30000,
           });
           res
             .cookie("voter_token", voter_token, {
               maxAge: 30000,
-              httpOnly: true
+              httpOnly: true,
             })
             .send([true]);
         }
@@ -765,8 +813,8 @@ async function mail(email, subject, data) {
     service: "gmail",
     auth: {
       user: db.user, // generated ethereal user
-      pass: db.pass // generated ethereal password
-    }
+      pass: db.pass, // generated ethereal password
+    },
   });
 
   // send mail with defined transport object
@@ -776,7 +824,7 @@ async function mail(email, subject, data) {
       to: email, // list of receivers
       subject: subject, // Subject line
       //text: "your otp is " + otp, // plain text body
-      html: data // html body
+      html: data, // html body
     },
     (err, info) => {
       if (err) {
