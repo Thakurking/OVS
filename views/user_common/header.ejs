@@ -11,50 +11,24 @@
     <link rel="stylesheet" href="chartjs/Chart.min.css">
     <style>
         ::-webkit-scrollbar {
-            width: 0;
+            display: none;
         }
 
         .main_content {
             background: linear-gradient(90deg, #aa076b, #61045f);
-            background-attachment: fixed;
+
         }
 
         .bg-custom-1 {
             background: linear-gradient(90deg, #aa076b, #61045f) !important;
         }
 
-        /* .banner { */
-        /* background: url("img/1.jpg"); */
-        /* background: linear-gradient(#cc2b5e, #753a88); */
-        /* background: linear-gradient(45deg, #de6262, #ffb88c); */
-        /* background: linear-gradient(45deg, #eb3349, #f45c43); */
-        /* background: linear-gradient(90deg, #7b4397, #dc2430); */
-        /* background: linear-gradient(45deg, #4568dc, #b06ab3); */
-        /* background: linear-gradient(90deg, #c33764, #1d2671); */
-        /* background: linear-gradient(90deg, #aa076b, #61045f);
-
-            background-size: cover;
-            background-position: center;
-            width: 100%;
-        } */
-
         .election_header {
             font-size: calc(5vh + 5vw);
         }
 
-
-        .media {
-            min-height: 150px;
-        }
-
         #time .h3 {
             font-size: calc(4vh + 4vw);
-        }
-
-        .move-cont {
-            position: relative;
-            bottom: 0;
-            margin: 0 auto;
         }
 
         .move {
@@ -123,15 +97,13 @@
 
 <body>
     <span class="spinner"></span>
-    <!-- navbar -->
-    <nav class="navbar navbar-expand-sm fixed-top navbar-dark bg-custom-1">
+
+    <nav class="navbar fixed-top bg-custom-1">
         <div class="container">
-            <a class="navbar-brand" href="/"><strong>OVS</strong></a>
-            <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse"
-                data-target="#collapsibleNavId" aria-controls="collapsibleNavId" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <a class="navbar-brand text-white" href="/"><strong>OVS</strong></a>
+            <a tabindex="0" class="text-white float-right dismiss-popover" data-toggle="popover" data-trigger="focous"
+                data-content="<a href='/about'>about</a><br><br><a href='/privacy-policy'>privacy-policy</a>"
+                style="outline:none;text-decoration:none;"><i class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
             <div class="collapse navbar-collapse" id="collapsibleNavId">
                 <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
                     <li class="nav-item">

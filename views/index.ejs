@@ -64,14 +64,15 @@
 <%-include user_common/footer.ejs%>
 <script>
 
-    function votingStartIn(date, time, edate, etime) {
-        var votebtn = $('.move-cont'),
-            eventTime = moment(date + " " + time, 'DD-MM-YYYY HH:mm:ss').unix(),
-            currentTime = moment().unix(),
+    var flag = 0;
+    function votingStartIn(date, time, edate, etime, ctime) {
+        var eventTime = moment(date + " " + time, 'DD-MM-YYYY HH:mm:ss').unix(),
+            currentTime = ctime,
             diffTime = eventTime - currentTime,
             duration = moment.duration(diffTime * 1000, 'milliseconds'),
             interval = 1000;
         //#endregion
+
         votebtn.hide();
 
         // if time to countdown
@@ -131,9 +132,11 @@
         //#endregion
 
 
+        $('.move-cont').hide();
 
         // if time to countdown
         if (diffTime > 0) {
+            console.log("diff check flag=", flag);
 
             //#region get time container and hide vote btn
             var $d = $('.days');
@@ -161,22 +164,46 @@
                 $m.text(m);
                 $s.text(s);
 
-                if (d == '00' && h == '00' && m == "00" && s == "00") {
-                    console.log("voting starts in interval if statement--->");
-                    clearInterval(tv);
-                    $(".tm").hide();
-                    $(".time-caption").html("<span class='h5'>voting ended</span>");
-                    votebtn.hide();
+                if (flag == 0) {
+                    if (d == '00' && h == '00' && m == "00" && s == "00") {
+                        console.log("------->if difftime > 0 and flag== 0");
+                        clearInterval(tv);
+                        flag = 1;
+                        votingStartIn(edate, etime, 0, 0, ctime);
+                        $('.move-cont').show();
+                        $(".time-caption").html("<span class='h5'>voting ends in..</span>");
+                    }
+                }
+                else {
+                    if (d == '00' && h == '00' && m == "00" && s == "00") {
+                        console.log("------->if difftime > 0 and flag== 1")
+                        clearInterval(tv);
+                        $('.move-cont').hide();
+                        $(".tm").hide();
+                        $(".time-caption").html("<span class='h5'>voting ended</span>");
+                    }
                 }
             }, interval);
 
         }
         else {
-            $(".time-caption").html("<span class='h5'>voting ended</span>");
-            $(".tm").hide();
-            votebtn.hide();
+            if (flag == 0) {
+                flag = 1;
+                console.log("------->if difftime < 0 and flag== 0");
+                votingStartIn(edate, etime, 0, 0, ctime);
+                $('.move-cont').show();
+                $(".time-caption").html("<span class='h5'>voting ends in</span>");
+            }
+            else {
+                console.log("------->if difftime < 0 and flag== 1");
+                $('.move-cont').hide();
+                $(".time-caption").html("<span class='h5'>voting ended</span>");
+                $(".tm").hide();
+            }
+
         }
     }
+
 
     window.onload = function (e) {
         var page = localStorage.getItem("page");
@@ -203,11 +230,8 @@
 
     $(document).ready(function () {
 
-        var parties = [],
-            score = [],
-            voters = ["Total vote Given", "Voters left"],
-            voteGiven = 0;
-        $(".spinner").fadeOut();
+        var voters = ["Total vote Given", "Voters left"];
+        $(".spinner").fadeOut("slow");
         $("[data-toggle='tooltip']").tooltip();
         $("#sectionCD,#sectionRS").hide();
 
@@ -222,8 +246,8 @@
                     if (data != false) {
                         $("#time").html("");
                         var record = "<div class='row'><div class='col-12 text-center mt-5 pt-5'>";
-                        record += "<h1 class='election_header'>" + data.header + "</h1>";
-                        record += "<p class='orgby'>" + data.orgby + "</p><p class='time-caption'><span class='h5'>voting begins in..</sapn></p></div>";
+                        record += "<h1 class='election_header'>" + data.event.header + "</h1>";
+                        record += "<p class='orgby'>" + data.event.orgby + "</p><p class='time-caption'><span class='h5'>voting begins in..</sapn></p></div>";
                         record += "<div class='col-3 col-md-3 text-center p-4 tm'><span class='h3 days'></span><br><span>Days</span></div>";
                         record += "<div class='col-3 col-md-3 text-center p-4 tm'><span class='h3 hours'></span><br><span>Hours</span></div>";
                         record += "<div class='col-3 col-md-3 text-center p-4 tm'><span class='h3 minutes'></span><br><span>minutes</span></div>";
@@ -231,10 +255,15 @@
                         record += "<div class='col-12 text-center move-cont mb-3'><a class='text-white' data-toggle='modal' data-target='#voteAuth' data-backdrop='static' data-keyboard='false'><i class='fa fa-thumbs-up fa-3x move' aria-hidden='true'></i><br>";
                         record += "vote now</a> </div></div>";
                         $("#time").append(record);
-                        votingStartIn(data.date, data.time, data.edate, data.etime);
+                        if (flag == 0) {
+                            flag = 1;
+                            votingStartIn(data.event.date, data.event.time, data.event.edate, data.event.etime, data.ctime);
+                        }
+                        else
+                            votingStartIn(data.event.edate, data.event.etime, data.event.date, data.event.time, data.ctime);
                     }
                     else {
-                        $("#time").html("<div class='row'><div class='col-12 text-center mt-5 pt-5 h4'>No events avilable<div></div>");
+                        $("#time").html("<div class='row'><div class='col-12 text-center mt-5 pt-5 display-4'>No events available at the moment<div></div>");
                     }
                 },
                 error: function (data) {
@@ -269,7 +298,7 @@
                         }
                     }
                     else {
-                        $(".candidates_show").append("<div class='col-12 text-center pt-4 display-4'>Not availble..</div>");
+                        $(".candidates_show").html("<div class='col-12 text-center pt-4 display-4'>No records to show...</div>");
                     }
                 },
                 error: function (data) {
@@ -278,6 +307,10 @@
             });
         });
         $("#res").click(function () {
+            var parties = [],
+                score = [],
+                colors = [],
+                voteGiven = 0;
             localStorage.setItem("page", "res");
             $("#sectionTM,#sectionCD").hide();
             $("#sectionRS").show();
@@ -291,6 +324,7 @@
                         $(".result-table").append(tstart);
                         for (var i = 0; i < data.length; i++) {
                             parties.push(data[i].party);
+                            colors.push(data[i].color);
                             score.push(data[i].score);
                             voteGiven += data[i].score;
                             var record = "<tr>";
@@ -304,9 +338,9 @@
                         }
                         var tend = "</tbody></table></div></div>";
                         $(".result-table").append(tend);
-                        chart1(parties, score);
+                        chart1(parties, score, colors);
                     } else {
-                        $(".result-table").append("<div class='col-12 text-center mt-4 pt-4 display-4'>Not available..</div>");
+                        $(".result-table").html("<div class='col-12 text-center mt-4 pt-4 display-4'>No Records found..</div>");
                     }
                 },
                 error: function (data) {
@@ -327,7 +361,7 @@
         });
 
 
-        function chart1(parties, score) {
+        function chart1(parties, score, colors) {
             //- DONUT CHART -
             var donutChartCanvas = $('#donutChart').get(0).getContext('2d')
             var donutData = {
@@ -335,7 +369,7 @@
                 datasets: [
                     {
                         data: score,
-                        backgroundColor: ['#f39c12', '#00a65a', '#d2d6de'],
+                        backgroundColor: colors,
                     }
                 ]
             }
@@ -357,7 +391,7 @@
                 datasets: [
                     {
                         data: votes,
-                        backgroundColor: ['#f39c12', '#d2d6de'],
+                        backgroundColor: ['#0000ff', '#d2d6de'],
                     }
                 ]
             }
@@ -374,7 +408,6 @@
             });
 
         }
-
 
         $(".stage2").hide();
         $("#uid").keyup(function () {
@@ -394,10 +427,10 @@
                         $(".otp-check").val(data[2]);
                     }
                     else
-                        $(".msg").html("<span class='text-danger'>" + data[1] + "<a href='/'>Try again..</a></span>");
+                        $(".msg").html("<span class='text-danger'>" + data[1] + " <a href='/'><i class='fas fa-redo' aria-hidden='true'></i></a></span>");
                 },
                 error: function (data) {
-                    $(".msg").html("<span class='text-danger'>something went wrong <a href='/'>Try again..</a></span>");
+                    $(".msg").html("<span class='text-danger'>something went wrong <a href='/'><i class='fas fa-redo' aria-hidden='true'></i></a></span>");
                 }
             });
         });
@@ -428,6 +461,5 @@
                 }
             });
         });
-
     });
 </script>

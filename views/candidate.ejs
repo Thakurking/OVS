@@ -50,6 +50,10 @@
           <div class="form-group">
             <input type="text" class="form-control" id="partyName" placeholder="Party name">
           </div>
+          <!-- color code -->
+          <div class="form-group">
+            <input type="text" class="form-control" id="color" placeholder="#000000">
+          </div>
         </div>
         <!-- about textarea  -->
         <div class="form-group col-12">
@@ -122,6 +126,10 @@
             <input type="text" class="form-control" id="aadharU" placeholder="Aadhar number" maxlength="12"
               minlength="12">
           </div>
+          <!-- color code -->
+          <div class="form-group">
+            <input type="text" class="form-control" id="colorU" placeholder="#000000" maxlength="8">
+          </div>
         </div>
         <!-- about textarea  -->
         <div class="form-group col-12">
@@ -158,7 +166,9 @@
               <th>phno</th>
               <th>aadhar</th>
               <th>party name</th>
+              <th>color code</th>
               <th>symbol</th>
+              <th>color</th>
               <th>about</th>
               <th></th>
               <th></th>
@@ -175,6 +185,7 @@
               <td class="phnoU"><%=data[i].phone%></td>
               <td class="aadharU"><%=data[i].aadhar%></td>
               <td class="partyU"><%=data[i].party%></td>
+              <td class="colorU"><%=data[i].color%></td>
               <td class="symbolU"><img src="<%=data[i].symbol%>" class="rounded-circle img-thumbnail img-fluid"
                   style="height:50px;width:50px"></td>
               <td class="aboutU"><%=data[i].about%></td>
@@ -222,6 +233,7 @@
         $("#email").val() != "" &&
         $("#phno").val() != "" &&
         $("#partyName").val() != "" &&
+        $("#color").val() != "" &&
         $("#aadhar").val() != "" &&
         $("#about").val() != "" &&
         $("#candidateImage").val() != "" &&
@@ -242,6 +254,7 @@
         $("#email").val() != "" &&
         $("#phno").val() != "" &&
         $("#partyName").val() != "" &&
+        $("#color").val() != "" &&
         $("#aadhar").val() != "" &&
         $("#about").val() != "" &&
         $("#candidateImage").val() != "" &&
@@ -269,6 +282,7 @@
       formData.append("email", $("#email").val());
       formData.append("phno", $("#phno").val());
       formData.append("party", $("#partyName").val());
+      formData.append("color", $("#color").val());
       formData.append("aadhar", $("#aadhar").val());
       formData.append("about", $("#about").val());
       $.ajax({
@@ -428,6 +442,12 @@
           .find(".partyU")
           .text()
       );
+      $("#colorU").val(
+        $(this)
+          .closest("tr")
+          .find(".colorU")
+          .text()
+      );
       $("#aadharU").val(
         $(this)
           .closest("tr")
@@ -447,6 +467,7 @@
           $("#emailU").val() != "" &&
           $("#phnoU").val() != "" &&
           $("#partyU").val() != "" &&
+          $("#colorU").val() != "" &&
           $("#aadharU").val() != "" &&
           $("#aboutU").val() != ""
         ) {
@@ -469,6 +490,7 @@
           phone: $("#phnoU").val(),
           aadhar: $("#aadharU").val(),
           party: $("#partyU").val(),
+          color: $("#colorU").val(),
           about: $("#aboutU").val()
         };
 
