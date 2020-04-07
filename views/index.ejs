@@ -63,11 +63,12 @@
 
 <%-include user_common/footer.ejs%>
 <script>
+    var interval1 = null, interval2 = null;
 
-    var flag = 0;
     function votingStartIn(date, time, edate, etime, ctime) {
         var eventTime = moment(date + " " + time, 'DD-MM-YYYY HH:mm:ss').unix(),
-            currentTime = ctime,
+            votebtn = $(".move-cont"),
+            currentTime = moment().unix(),
             diffTime = eventTime - currentTime,
             duration = moment.duration(diffTime * 1000, 'milliseconds'),
             interval = 1000;
@@ -85,7 +86,7 @@
             $s = $('.seconds');
             //#endregion
 
-            var tv = setInterval(function () {
+            interval1 = setInterval(function () {
 
                 duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
                 var d = moment.duration(duration).days(),
@@ -105,7 +106,7 @@
                 $s.text(s);
 
                 if (d == '00' && h == '00' && m == "00" && s == "00") {
-                    clearInterval(tv);
+                    clearInterval(interval1);
                     votingEndIn(edate, etime);
                     votebtn.show();
                     $(".time-caption").html("<span class='h5'>voting ends in..</span>");
@@ -122,8 +123,7 @@
 
 
     function votingEndIn(edate, etime) {
-
-        var votebtn = $('.move-cont'),
+        var votebtn = $(".move-cont"),
             eventTime = moment(edate + " " + etime, 'DD-MM-YYYY HH:mm:ss').unix(),
             currentTime = moment().unix(),
             diffTime = eventTime - currentTime,
@@ -131,12 +131,8 @@
             interval = 1000;
         //#endregion
 
-
-        $('.move-cont').hide();
-
         // if time to countdown
         if (diffTime > 0) {
-            console.log("diff check flag=", flag);
 
             //#region get time container and hide vote btn
             var $d = $('.days');
@@ -145,7 +141,7 @@
             $s = $('.seconds');
             //#endregion
 
-            var tv = setInterval(function () {
+            interval2 = setInterval(function () {
 
                 duration = moment.duration(duration.asMilliseconds() - interval, 'milliseconds');
                 var d = moment.duration(duration).days(),
@@ -164,42 +160,19 @@
                 $m.text(m);
                 $s.text(s);
 
-                if (flag == 0) {
-                    if (d == '00' && h == '00' && m == "00" && s == "00") {
-                        console.log("------->if difftime > 0 and flag== 0");
-                        clearInterval(tv);
-                        flag = 1;
-                        votingStartIn(edate, etime, 0, 0, ctime);
-                        $('.move-cont').show();
-                        $(".time-caption").html("<span class='h5'>voting ends in..</span>");
-                    }
-                }
-                else {
-                    if (d == '00' && h == '00' && m == "00" && s == "00") {
-                        console.log("------->if difftime > 0 and flag== 1")
-                        clearInterval(tv);
-                        $('.move-cont').hide();
-                        $(".tm").hide();
-                        $(".time-caption").html("<span class='h5'>voting ended</span>");
-                    }
+                if (d == '00' && h == '00' && m == "00" && s == "00") {
+                    clearInterval(interval2);
+                    votebtn.hide();
+                    $('.tm').hide();
+                    $(".time-caption").html("<span class='h5'>voting ended</span>");
                 }
             }, interval);
 
         }
         else {
-            if (flag == 0) {
-                flag = 1;
-                console.log("------->if difftime < 0 and flag== 0");
-                votingStartIn(edate, etime, 0, 0, ctime);
-                $('.move-cont').show();
-                $(".time-caption").html("<span class='h5'>voting ends in</span>");
-            }
-            else {
-                console.log("------->if difftime < 0 and flag== 1");
-                $('.move-cont').hide();
-                $(".time-caption").html("<span class='h5'>voting ended</span>");
-                $(".tm").hide();
-            }
+            $('.tm').hide();
+            votebtn.hide();
+            $(".time-caption").html("<span class='h5'>voting ended</span>");
 
         }
     }
@@ -255,12 +228,9 @@
                         record += "<div class='col-12 text-center move-cont mb-3'><a class='text-white' data-toggle='modal' data-target='#voteAuth' data-backdrop='static' data-keyboard='false'><i class='fa fa-thumbs-up fa-3x move' aria-hidden='true'></i><br>";
                         record += "vote now</a> </div></div>";
                         $("#time").append(record);
-                        if (flag == 0) {
-                            flag = 1;
-                            votingStartIn(data.event.date, data.event.time, data.event.edate, data.event.etime, data.ctime);
-                        }
-                        else
-                            votingStartIn(data.event.edate, data.event.etime, data.event.date, data.event.time, data.ctime);
+                        if (interval1 != null) clearInterval(interval1);
+                        if (interval2 != null) clearInterval(interval2);
+                        votingStartIn(data.event.date, data.event.time, data.event.edate, data.event.etime, data.ctime);
                     }
                     else {
                         $("#time").html("<div class='row'><div class='col-12 text-center mt-5 pt-5 display-4'>No events available at the moment<div></div>");
