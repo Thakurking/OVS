@@ -1,10 +1,17 @@
 <%-include admin_common/header.ejs%>
+<style>
+  .form-group::before {
+    content: "*";
+    color: red;
+  }
+</style>
 <!-- Modal -->
 <div class="modal fade" id="voterAddModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
+        <span class="text-danger">Fileds with * mark are required</span>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

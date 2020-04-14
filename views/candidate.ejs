@@ -1,10 +1,22 @@
 <%- include admin_common/header.ejs%>
+<style>
+  label::after {
+    content: "  *";
+    color: red;
+  }
+
+  .form-group::before {
+    content: "*";
+    color: red;
+  }
+</style>
 <!--candidate adding Modal -->
 <div class="modal fade" id="candidateAddModal" tabindex="-1" role="dialog" aria-labelledby="modelTitleId"
   aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
+        <span class="text-danger">Fileds with * mark are required</span>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -74,6 +86,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
+        <span class="text-danger">Fileds with * mark are required</span>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

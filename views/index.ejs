@@ -302,11 +302,12 @@
                             record += "<td><strong>" + data[i].name + "</strong></td>";
                             record += "<td>from</td>";
                             record += "<td><strong>" + data[i].party + "</strong></td>";
-                            record += "<td class='p-2'><img src='" + data[i].symbol + "' class='rounded-circle img-thumbnail img-fluid ' style='height:50px;width:50px'>";
+                            record += "<td><img src='" + data[i].symbol + "' class='rounded-circle img-thumbnail img-fluid ' style='height:50px;width:50px'>";
                             record += "<span class='badge badge-secondry badge-success'>" + data[i].score + "</span></td></tr>";
                             $(".result-table table tbody").append(record);
                         }
                         var tend = "</tbody></table></div></div>";
+                        $(".badge").first().append("  <i class='fa fa-trophy text-warning' aria-hidden='true'></i>");
                         $(".result-table").append(tend);
                         chart1(parties, score, colors);
                     } else {
@@ -431,5 +432,6 @@
                 }
             });
         });
+
     });
 </script>

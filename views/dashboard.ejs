@@ -1,4 +1,10 @@
 <%-include admin_common/header.ejs%>
+<style>
+    label::before {
+        content: "*";
+        color: red;
+    }
+</style>
 <div class="container">
     <div class="row">
         <% if(event == null){ %>
@@ -12,8 +18,9 @@
     </div>
     <div class="row">
         <% if(event!= null){ %>
-        <div class="col-12 display-4 display text-center">Events</div>
+        <div class="col-12 h4 pt-2">Events</div>
         <div class="col-12 col-md-12 mt-4 text-center">
+            <span class="text-danger">Fields with * mark are required</span>
             <form class="form border border-md-only p-4 row" id="eventForm">
                 <div class="form-group col-md-6">
                     <label for="header">Event header</label>
