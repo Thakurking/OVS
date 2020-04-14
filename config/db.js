@@ -6,8 +6,8 @@
 // otherwise mailing will not work
 
 module.exports = {
-  user: "example@gmail.com",
-  pass: "XXXXXXXXXXXXXXXXX",
+  user: "playersarenateam@gmail.com",
+  pass: "eldrago891851##",
   secretKey: "admin12345",
 };
 //Replace your email, desired passoword and secret key in the following :-

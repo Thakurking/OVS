@@ -61,7 +61,7 @@ router.get("/", (req, res) => {
 });
 
 // voting page
-router.get("/vote", authVoter, function (req, res) {
+router.get("/vote", authVoter,function (req, res) {
   Candidate.find({}, (err, result) => {
     if (err) console.log(err);
     else {
@@ -74,21 +74,24 @@ router.get("/vote", authVoter, function (req, res) {
 router.post("/give_vote", authVoter, async (req, res) => {
   var inc = 0;
   await Candidate.findOne({ _id: req.body.id }, async (err, obj) => {
-    if (err) res.send([false, "party not found"]);
+    if (err) console.log(err);
+    else if (obj == null) res.send([false, "party not found"]);
     else {
-      console.log(obj.score);
       if (obj.score) {
         inc = obj.score + 1;
       } else {
         inc = inc + 1;
       }
-      console.log(typeof inc, inc);
+      let m = await Voter.updateOne(
+        { _id: req.voterID },
+        { $set: { status: "y" } }
+      );
       await Candidate.updateOne(
         { _id: obj._id },
         { $set: { score: inc } },
         (err, result) => {
           if (err) console.log(err);
-          else res.clearCookie("voter_token").send(true);
+          else res.clearCookie("voter_token").send([true]);
         }
       );
     }
@@ -158,6 +161,7 @@ function authVoter(req, res, next) {
     jwt.verify(token, "blkhrt", function (err, decoded) {
       if (err) res.redirect("/");
       else {
+        req.voterID = decoded.data;
         next();
       }
     });
@@ -725,6 +729,15 @@ router.post("/admin_request_reject", async (req, res) => {
 
 // voters otp send
 router.post("/otp_send", async (req, res) => {
+  const token = req.cookies.voter_token;
+  if (!token) {
+    jwt.verify(token, "blkhrt", function (err, decoded) {
+      if (!err) {
+        req.voterID = decoded.data;
+        res.redirect("/vote");
+      }
+    });
+  }
   await event.findOne({ id: "1", showHome: true }, async (err, obj) => {
     if (err) console.log(err);
     else if (obj == null) {
@@ -737,7 +750,7 @@ router.post("/otp_send", async (req, res) => {
     ) {
       res.send([false, "invalid request"]);
     } else {
-      await Voter.findOne({ aadhar: req.body.uid }, (err, obj) => {
+      await Voter.findOne({ aadhar: req.body.uid }, async (err, obj) => {
         if (err) {
           res.send([false, "something went wrong"]);
         } else if (obj == null) {
@@ -746,22 +759,38 @@ router.post("/otp_send", async (req, res) => {
           res.send([false, "you have already voted once"]);
         } else {
           var otp1 = String(Math.floor(100000 + Math.random() * 900000));
-          Voter.updateOne(
+          await Voter.updateOne(
             { _id: obj._id },
             { $set: { otp: otp1, status: "n" } },
-            (err, result) => {
+            async (err, result) => {
               if (err) res.send([false, "couldn't genrate otp "]);
               else {
-                msg = "your requested OTP is " + otp1;
-                if (mail(obj.email, "OVS request for otp", msg)) {
-                  res.send([
-                    true,
-                    "A one time otp has been sent to your email",
-                    obj._id,
-                  ]);
-                } else {
-                  res.send([false, "couldn't send otp"]);
-                }
+                let transporter = nodemailer.createTransport({
+                  service: "gmail",
+                  auth: {
+                    user: db.user,
+                    pass: db.pass,
+                  },
+                });
+                await transporter.sendMail(
+                  {
+                    from: "playersarenateam@gmail.com",
+                    to: obj.email,
+                    subject: "OVS request for otp",
+                    html: "your requested OTP is " + otp1,
+                  },
+                  (err, info) => {
+                    if (err) {
+                      res.send([false, "Couldn't send OTP"]);
+                    } else {
+                      res.send([
+                        true,
+                        "if your email was valid, a OTP has been sent to your email",
+                        obj._id,
+                      ]);
+                    }
+                  }
+                );
               }
             }
           );
@@ -783,21 +812,15 @@ router.post("/otp_check", async (req, res) => {
     } else if (obj.otp != req.body.otp) {
       res.send([false, "invalid otp"]);
     } else {
-      await Voter.updateOne(
-        { _id: obj._id },
-        { $set: { status: "y" } },
-        (err, result) => {
-          var voter_token = jwt.sign({ data: obj }, "blkhrt", {
-            expiresIn: 30000,
-          });
-          res
-            .cookie("voter_token", voter_token, {
-              maxAge: 30000,
-              httpOnly: true,
-            })
-            .send([true]);
-        }
-      );
+      var voter_token = jwt.sign({ data: obj._id }, "blkhrt", {
+        expiresIn: 120000,
+      });
+      res
+        .cookie("voter_token", voter_token, {
+          maxAge: 120000,
+          httpOnly: true,
+        })
+        .send([true]);
     }
   });
 });
@@ -818,7 +841,7 @@ async function mail(email, subject, data) {
   });
 
   // send mail with defined transport object
-  await await transporter.sendMail(
+  await transporter.sendMail(
     {
       from: "playersarenateam@gmail.com", // sender address
       to: email, // list of receivers
@@ -827,15 +850,11 @@ async function mail(email, subject, data) {
       html: data, // html body
     },
     (err, info) => {
-      if (err) {
-        return false;
-      } else {
-        return true;
-      }
+      if (err) false;
+      else true;
     }
   );
 }
-
 // mail().catch(console.error);
 //#endregion
 

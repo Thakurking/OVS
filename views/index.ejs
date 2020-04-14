@@ -261,7 +261,7 @@
                             record += "<div class='modal-content'><div class='modal-header'><h5 class='modal-title'>" + data[i].name + "</h5>";
                             record += "<button type='button' class='close' data-dismiss='modal' aria-label='Close'>";
                             record += "<span aria-hidden='true'>&times;</span></button></div><div class='modal-body'>";
-                            record += "<h5>from" + data[i].party + " <img src='" + data[i].symbol + "' class='float-right' style='width:30px;' data-toggle='tooltip' title='" + data[i].party + "'>";
+                            record += "<h5>from " + data[i].party + " <img src='" + data[i].symbol + "' class='float-right' style='width:30px;' data-toggle='tooltip' title='" + data[i].party + "'>";
                             record += "</h5><p>" + data[i].about + "</p></div></div></div></div>";
 
                             $(".candidates_show").append(record);
@@ -392,15 +392,15 @@
                 data: { uid: $("#uid").val() },
                 success: function (data) {
                     if (data[0] == true) {
-                        $(".msg").html("<span class='text-success'>" + data[1] + "</span>");
+                        $(".msg").html("<div class='alert alert-success'>" + data[1] + "</div>");
                         $(".stage2,.stage1").toggle();
                         $(".otp-check").val(data[2]);
                     }
                     else
-                        $(".msg").html("<span class='text-danger'>" + data[1] + " <a href='/'><i class='fas fa-redo' aria-hidden='true'></i></a></span>");
+                        $(".msg").html("<div class='alert alert-danger'>" + data[1] + " <a href='/'><i class='fas fa-redo' aria-hidden='true'></i></a></div>");
                 },
                 error: function (data) {
-                    $(".msg").html("<span class='text-danger'>something went wrong <a href='/'><i class='fas fa-redo' aria-hidden='true'></i></a></span>");
+                    $(".msg").html("<div class='alert alert-danger'>something went wrong <a href='/'><i class='fas fa-redo' aria-hidden='true'></i></a></div>");
                 }
             });
         });
